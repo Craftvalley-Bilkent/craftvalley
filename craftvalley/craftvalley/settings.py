@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ ROOT_URLCONF = "craftvalley.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [ "templates" ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -77,7 +78,7 @@ WSGI_APPLICATION = "craftvalley.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'database',            # Match MYSQL_DATABASE in docker-compose.yml
+        'NAME': 'cvdb',            # Match MYSQL_DATABASE in docker-compose.yml
         'USER': 'root',
         'PASSWORD': 'password',        # Match MYSQL_ROOT_PASSWORD in docker-compose.yml
         'HOST': 'db',                   # Use the service name defined in docker-compose.yml
