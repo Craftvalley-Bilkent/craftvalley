@@ -75,9 +75,13 @@ WSGI_APPLICATION = "craftvalley.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'database',            # Match MYSQL_DATABASE in docker-compose.yml
+        'USER': 'root',
+        'PASSWORD': 'password',        # Match MYSQL_ROOT_PASSWORD in docker-compose.yml
+        'HOST': 'db',                   # Use the service name defined in docker-compose.yml
+        'PORT': '3306',                 # Expose MySQL container's port 3306 to host port 3307
     }
 }
 
