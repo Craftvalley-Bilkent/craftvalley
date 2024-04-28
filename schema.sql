@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS Sub_Category(
 CREATE TABLE IF NOT EXISTS In_Category(
     sub_category_id 	INT NOT NULL,
     main_category_id 	INT NOT NULL,
-    product_id 		NOT NULL,
+    product_id 		INT NOT NULL,
     PRIMARY KEY(sub_category_id, main_category_id, product_id),
     FOREIGN KEY(main_category_id) REFERENCES Main_Category(main_category_id) ON DELETE CASCADE,
 	      FOREIGN KEY(sub_category_id) REFERENCES Sub_Category(sub_category_id) ON DELETE CASCADE,
