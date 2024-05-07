@@ -3,4 +3,5 @@ import user.views
 
 urlpatterns = [
     path("", user.views.login),
+    path("main", user.views.showProducts),
 ]
