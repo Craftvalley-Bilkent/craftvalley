@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Product(
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
     amount 		INT NOT NULL,
-    images 		BLOB,
+    images 		LONGBLOB,
     PRIMARY KEY(product_id)
 );
 
