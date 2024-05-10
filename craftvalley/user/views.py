@@ -31,7 +31,7 @@ def showProducts(request):
 
     delete_all_products()
     product_data = [
-        (5, 'First Product', 'Very good product', 12.5, 3, image_data_1),
+        (5, 'First Product', 'Very good product', 12.5, 0, image_data_1),
         (6, 'Second Product', 'Bad product >:(', 250, 74, image_data_2)
     ]
     with connection.cursor() as cursor:
@@ -42,7 +42,13 @@ def showProducts(request):
     #TEST
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM Product")
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE amount > 0 GROUP BY product_id")
+        rows = cursor.fetchone()
+    
+    numOfProducts = rows
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Product WHERE amount > 0")
         rows = cursor.fetchall()
     
     all_products = []
@@ -67,5 +73,5 @@ def showProducts(request):
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
-    return render(request, 'user/mainPageUser.html', {'products': products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages})
+    return render(request, 'user/mainPageUser.html', {'products': products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': numOfProducts})
 

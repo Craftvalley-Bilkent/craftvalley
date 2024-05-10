@@ -123,7 +123,7 @@
                 <h3>${title}</h3>
                 <p>${description}</p>
                 <p>Price: $${price}</p>
-                ${images ? `<img src="data:image/jpeg;base64,${images}" alt="${title}" style="width: 100%;">` : ''}
+                ${images ? `<img src="data:image/jpeg;base64,${images}" alt="${title}" style="min-width: 100%; min-heigth: 100%">` : ''}
             `;
             popup.style.display = 'block';
         }
