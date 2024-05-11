@@ -5,26 +5,37 @@
     <link rel="stylesheet" type="text/css" href="{% static 'mainPageUser.css' %}">
 {% endblock %}
 
-{% block content %}
+{% block content %}  
     <div class="product-container">
         {% for product in products %}
-            <div class="product" onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">
-                <h3>{{ product.title }}</h3>
-                <p>{{ product.description }}</p>
-                <p>Price: ${{ product.price }}</p>
+            <div class="product">
+                <h3 onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.title }}</h3>
+                <p onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.description }}</p>
+                <p onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
-                    <img src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
+                    <img onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
                 {% endif %}
+                <!--https://codepen.io/hesguru/pen/BaybqXv-->
+                <div class="rate">
+                    <input type="radio" id="star5" name="{{productId}}" value="5" />
+                    <label for="star5" title="text">5 stars</label>
+                    <input type="radio" id="star4" name="{{productId}}" value="4" />
+                    <label for="star4" title="text">4 stars</label>
+                    <input type="radio" id="star3" name="{{productId}}" value="3" />
+                    <label for="star3" title="text">3 stars</label>
+                    <input type="radio" id="star2" name="{{productId}}" value="2" />
+                    <label for="star2" title="text">2 stars</label>
+                    <input type="radio" id="star1" name="{{productId}}" value="1" />
+                    <label for="star1" title="text">1 star</label>
+                  </div>
             </div>
         {% endfor %}
     </div>
     
-    <div class="mainPage-popup" id="productPopup" style="z-index: 20; background-color: #FFF7F1; padding: 20px; box-shadow: 0px 0px 10px #000; min-width: 50%;">
-        
-    </div>
+    <div class="mainPage-popup" id="productPopup" style="z-index: 20; background-color: #FFF7F1; padding: 20px; box-shadow: 0px 0px 10px #000; min-width: 50%;"></div>
 
     <!-- Pagination -->
-    <div class="pagination-container fixed-bottom text-center mb-3 justify-content-center">
+    <div class="pagination-container text-center justify-content-center">
         <ul class="pagination justify-content-center">
             {% if current_page > 3 %}
                 <li class="page-item">
@@ -97,7 +108,7 @@
                 <h3>${title}</h3>
                 <p>${description}</p>
                 <p>Price: $${price}</p>
-                ${images ? `<img src='data:image/jpeg;base64,${images}' alt='${title}' style='min-width: 100%; display: block; margin: auto;'>` : ''}
+                ${images ? `<img src='data:image/jpeg;base64,${images}' alt='${title}' style='max-width: 80%; max-height:80%; min-height:80%; display: block; margin: auto;'>` : ''}
             `;
             popup.style.display = 'block'; 
             overlay.style.display = 'block'; 
