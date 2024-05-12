@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
 import base64
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def login(request):
@@ -11,13 +12,31 @@ def login(request):
     }
     return render(request, "user/login.html", context=context)
 
-#TEST
 def delete_all_products():
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM Product")
-#TEST
+
+def delete_users():
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM User")
+        cursor.execute("INSERT INTO User (user_id, user_name, email, password, user_type, address, phone_number, active) VALUES (1, 'CustomerName', 'customer@example.com', 'customer_password', 'customer', '123 Customer St, City', '1234567890', 1)")
+        cursor.execute("INSERT INTO Customer (user_id, picture, payment_info, balance) VALUES (1, NULL, 'Credit Card: XXXX-XXXX-XXXX-XXXX', 0.00)")
+
+@csrf_exempt
 def showProducts(request):
-    #TEST
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'postRating':
+            productId = request.POST.get('product_id')
+            ratingValue = request.POST.get('rating')
+            userId = 1
+            delete_users()
+            with connection.cursor() as cursor:
+                product_data = [(userId, productId, ratingValue)]
+                sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
+                for data in product_data:
+                    cursor.execute(sql_query, data)
     image_path_1 = 'first_product_image.jpg'
     image_path_2 = 'second_product_image.jpg'
 
