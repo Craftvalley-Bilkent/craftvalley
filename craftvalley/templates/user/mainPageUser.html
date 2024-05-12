@@ -9,25 +9,24 @@
     <div class="product-container">
         {% for product in products %}
             <div class="product">
-                <h3 onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.title }}</h3>
-                <p onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.description }}</p>
-                <p onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">Price: ${{ product.price }}</p>
+                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.title }}</h3>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">{{ product.description }}</p>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
-                    <img onclick="showProductPopup('{{ product.id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
+                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.images }}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
                 {% endif %}
-                <!--https://codepen.io/hesguru/pen/BaybqXv-->
                 <div class="rate">
-                    <input type="radio" id="star5" name="{{productId}}" value="5" />
-                    <label for="star5" title="text">5 stars</label>
-                    <input type="radio" id="star4" name="{{productId}}" value="4" />
-                    <label for="star4" title="text">4 stars</label>
-                    <input type="radio" id="star3" name="{{productId}}" value="3" />
-                    <label for="star3" title="text">3 stars</label>
-                    <input type="radio" id="star2" name="{{productId}}" value="2" />
-                    <label for="star2" title="text">2 stars</label>
-                    <input type="radio" id="star1" name="{{productId}}" value="1" />
-                    <label for="star1" title="text">1 star</label>
-                  </div>
+                    <input type="radio" id="star5_{{product.product_id}}" name="rate_{{product.product_id}}" value="5" onclick="submitRating('{{product.product_id}}', '5')" />
+                    <label for="star5_{{product.product_id}}" title="text">5 stars</label>
+                    <input type="radio" id="star4_{{product.product_id}}" name="rate_{{product.product_id}}" value="4" onclick="submitRating('{{product.product_id}}', '4')" />
+                    <label for="star4_{{product.product_id}}" title="text">4 stars</label>
+                    <input type="radio" id="star3_{{product.product_id}}" name="rate_{{product.product_id}}" value="3" onclick="submitRating('{{product.product_id}}', '3')" />
+                    <label for="star3_{{product.product_id}}" title="text">3 stars</label>
+                    <input type="radio" id="star2_{{product.product_id}}" name="rate_{{product.product_id}}" value="2" onclick="submitRating('{{product.product_id}}', '2')" />
+                    <label for="star2_{{product.product_id}}" title="text">2 stars</label>
+                    <input type="radio" id="star1_{{product.product_id}}" name="rate_{{product.product_id}}" value="1" onclick="submitRating('{{product.product_id}}', '1')" />
+                    <label for="star1_{{product.product_id}}" title="text">1 star</label>
+                </div>
             </div>
         {% endfor %}
     </div>
@@ -123,6 +122,24 @@
             const popup = document.getElementById('productPopup');
             popup.innerHTML = '';
             popup.style.display = 'none';
+        }
+
+        function submitRating(productId, ratingValue) {
+            $.ajax({
+                url: '/user/main',
+                type: 'POST',
+                data: {
+                    'product_id': productId,
+                    'rating': ratingValue,
+                    'action': 'postRating'
+                },
+                success: function(response) {
+                    console.log('Rating submitted successfully');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error submitting rating:', error);
+                }
+            });
         }
     </script>
 {% endblock %}
