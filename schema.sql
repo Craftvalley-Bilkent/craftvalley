@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS Product(
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
     amount 		INT NOT NULL,
+    rating      DECIMAL(2,1) NOT NULL,
+    number_of_rating    INT NOT NULL,
     images 		LONGBLOB,
     PRIMARY KEY(product_id)
 );
