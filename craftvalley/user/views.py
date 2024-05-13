@@ -107,4 +107,15 @@ def showProducts(request):
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
-    return render(request, 'user/mainPageUser.html', {'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
+    all_categories = [
+        {'category_name': 'category1'},
+        {'category_name': 'category2'},
+        {'category_name': 'category3'},
+        {'category_name': 'category4'},
+        {'category_name': 'category5'},
+        {'category_name': 'category6'},
+        {'category_name': 'category7'},
+        {'category_name': 'category8'}
+    ]
+
+    return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
