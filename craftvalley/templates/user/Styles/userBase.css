@@ -1,12 +1,13 @@
 .top-bar {
     display: grid;
+    position: sticky !important;
     grid-template-columns: repeat(20, 1fr);
-    overflow: hidden;
     background-color: #FFF7F1;
     border: 1px solid black;
     padding: 10px 0;
     height: 7vh;
-
+    top: 0;
+    z-index: 15;
 }
 
 .top-bar-button {
