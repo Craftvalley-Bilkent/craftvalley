@@ -48,29 +48,29 @@ def showProducts(request):
 
     delete_all_products()
     product_data = [
-        (1, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (2, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (5, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (8, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (10, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (11, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (6, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (7, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (12, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (19, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (20, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (87, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (24, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (59, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (67, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (53, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (644, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (57, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (6111, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (5000, 'First Product', 'Very good product', 12.5, 78, image_data_2)
+        (1, 'Second Product', 'Bad product >:(', 250, 74, 4, 2, image_data_1),
+        (2, 'First Product', 'Very good product', 12.5, 78, 0.5, 1, image_data_2),
+        (5, 'Second Product', 'Bad product >:(', 250, 74, 1, 0, image_data_1),
+        (8, 'First Product', 'Very good product', 12.5, 78, 4.5, 62, image_data_2),
+        (10, 'Second Product', 'Bad product >:(', 250, 74, 4.8, 782, image_data_1),
+        (11, 'First Product', 'Very good product', 12.5, 78, 4.5, 32, image_data_2),
+        (6, 'Second Product', 'Bad product >:(', 250, 74, 4.7, 32, image_data_1),
+        (7, 'First Product', 'Very good product', 12.5, 78, 4.5, 14, image_data_2),
+        (12, 'Second Product', 'Bad product >:(', 250, 74, 4.5, 13, image_data_1),
+        (19, 'First Product', 'Very good product', 12.5, 78, 4.5, 152, image_data_2),
+        (20, 'Second Product', 'Bad product >:(', 250, 74, 4.5, 152, image_data_1),
+        (87, 'First Product', 'Very good product', 12.5, 78, 4.5, 155, image_data_2),
+        (24, 'Second Product', 'Bad product >:(', 250, 74, 4.5, 1, image_data_1),
+        (59, 'First Product', 'Very good product', 12.5, 78, 4, 12, image_data_2),
+        (67, 'Second Product', 'Bad product >:(', 250, 74, 5, 15, image_data_1),
+        (53, 'First Product', 'Very good product', 12.5, 78, 1, 17, image_data_2),
+        (644, 'Second Product', 'Bad product >:(', 250, 74, 4, 12, image_data_1),
+        (57, 'First Product', 'Very good product', 12.5, 78, 4, 112, image_data_2),
+        (6111, 'Second Product', 'Bad product >:(', 250, 74, 0, 100, image_data_1),
+        (5000, 'First Product', 'Very good product', 12.5, 78, 0, 102, image_data_2)
     ]
     with connection.cursor() as cursor:
-        sql_query = "INSERT INTO Product(product_id, title, description, price, amount, images) VALUES (%s, %s, %s, %s, %s, %s)"
+        sql_query = "INSERT INTO Product(product_id, title, description, price, amount, rating, number_of_rating, images) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
 
         for data in product_data:
             cursor.execute(sql_query, data)
@@ -101,7 +101,9 @@ def showProducts(request):
             'description': row[2],
             'price': row[3],
             'amount': row[4],
-            'images': base64.b64encode(row[5]).decode() if row[5] else None,
+            'rating': row[5],
+            'number_of_rating': row[6],
+            'images': base64.b64encode(row[7]).decode() if row[7] else None,
         }
         all_products.append(product)
 
