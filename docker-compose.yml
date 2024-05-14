@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: craftvalley
+    build: .
     ports:
       - "3000:3000"
     volumes:
