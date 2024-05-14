@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Products{% endblock %}
+
+{% block content %}
+<h2>Manage Products</h2>
+<div class="product-list row">
+    {% for product in products %}
+    <div class="product-item col-md-4">
+        <h3>{{ product.1 }}</h3>
+        <p>{{ product.2 }}</p>
+        <p>${{ product.3 }}</p>
+        <p>Stock: {{ product.4 }}</p>
+        <a href="{% url 'edit_product' product.0 %}" class="btn btn-warning">Edit</a>
+        <form method="post" action="{% url 'delete_product' product.0 %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
