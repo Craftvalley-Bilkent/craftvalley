@@ -48,7 +48,9 @@ CREATE TABLE IF NOT EXISTS Product(
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
     amount 		INT NOT NULL,
-    images 		BLOB,
+    rating      DECIMAL(2,1) NOT NULL,
+    number_of_rating    INT NOT NULL,
+    images 		LONGBLOB,
     PRIMARY KEY(product_id)
 );
 
@@ -230,6 +232,3 @@ CREATE TABLE IF NOT EXISTS Is_For(
     FOREIGN KEY(product_id) REFERENCES Product(product_id) ON DELETE CASCADE,
     FOREIGN KEY(recipient_id) REFERENCES Recipient(recipient_id) ON DELETE CASCADE
 );
-
-
-
