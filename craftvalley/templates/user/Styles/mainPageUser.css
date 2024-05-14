@@ -129,31 +129,33 @@
     font-size:30px;
     color:#ccc;
 }
+
 .rate:not(:checked) > label:before {
     content: '★ ';
 }
+
 .rate > input:checked ~ label {
     color: #ffc700;    
 }
-.rate:not(:checked) > label:hover,
-.rate:not(:checked) > label:hover ~ label {
-    color: #deb217;  
-}
+
 .rate > input:checked + label:hover,
 .rate > input:checked + label:hover ~ label,
 .rate > input:checked ~ label:hover,
 .rate > input:checked ~ label:hover ~ label,
 .rate > label:hover ~ input:checked ~ label {
-    color: #c59b08;
+    color: #ffc700;
 }
 
 .rate-container {
     display: inline-block;
-    vertical-align: middle; /* Align the container vertically */
+    vertical-align: middle; 
 }
 
 .number-of-ratings {
     display: inline-block;
-    margin-left: 10px; /* Adjust the margin between the stars and the number of ratings */
-    /* Add any additional styles for the number of ratings */
+    margin-left: 1px;
+    margin-top: 5%;
+    font-size: small;
+    margin-right: 20px;
 }
+
