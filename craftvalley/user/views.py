@@ -121,3 +121,6 @@ def showProducts(request):
     ]
 
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
+
+def showCart(request):
+    return render(request, "user/shoppingCart.html")

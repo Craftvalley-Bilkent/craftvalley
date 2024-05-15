@@ -6,20 +6,6 @@
 {% endblock %}
 
 {% block content %}  
-    <div class="categories-slide" id="cat-slide">
-        <button class="arrow-button" id="left-arrow-button">
-            <img src="{% static 'LeftButton.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
-        </button>
-
-        {% for category in categories %}
-            <div class="category-showcase">{{ category.category_name }}</div>
-        {% endfor %}
-
-        <button class="arrow-button" id="right-arrow-button">
-            <img src="{% static 'RightButton.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
-        </button>
-    </div>
-
     <div class="filter-area">
         <button>FILTER</button>
     </div>
@@ -191,30 +177,5 @@
             }
             return starsHtml;
         }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const categories = document.querySelectorAll('.category-showcase');
-            let first_seen_category = 0; 
-
-            function updateVisibility() {
-                categories.forEach((category, index) => {
-                    category.style.display = (index >= first_seen_category && index < first_seen_category + 4) ? 'flex' : 'none';
-                });
-            }
-
-            document.getElementById('left-arrow-button').addEventListener('click', function() {
-                first_seen_category = (first_seen_category - 1 + categories.length) % categories.length;
-                updateVisibility();
-            });
-
-            document.getElementById('right-arrow-button').addEventListener('click', function() {
-                first_seen_category = (first_seen_category + 1) % categories.length;
-                updateVisibility();
-            });
-
-            updateVisibility(); 
-        });
-
-        window.onload = renderStarRatings;
     </script>
 {% endblock %}
