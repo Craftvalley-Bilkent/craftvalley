@@ -79,6 +79,16 @@ def showProducts(request):
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
                 for data in product_data:
                     cursor.execute(sql_query, data)
+
+        elif action == 'addToCart':
+            productId = request.POST.get('productId')
+            userId = 1
+            delete_users()
+            with connection.cursor() as cursor:
+                cursor.callproc('CartAdder', (userId, productId))
+                
+            connection.commit()
+
     image_path_1 = 'first_product_image.jpg'
     image_path_2 = 'second_product_image.jpg'
 
