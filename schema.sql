@@ -234,4 +234,22 @@ CREATE TABLE IF NOT EXISTS Is_For(
 );
 
 
+DELIMETER //
+CREATE PROCEDURE CartAdder(IN user_id INT, IN product_id INT)
+BEGIN
+    DECLARE product_amount INT;
 
+    SELECT COUNT(*) INTO product_amount 
+    FROM Add_To_Shopping_Cart AS A 
+    WHERE A.product_id = product_id AND A.user_id = user_id;
+
+    IF product_amount > 0 THEN
+        UPDATE Add_To_Shopping_Cart 
+        SET count = count + 1 
+        WHERE product_id = product_id AND customer_id = user_id;
+    ELSE
+        INSERT INTO Add_To_Shopping_Cart (customer_id, product_id, count) 
+        VALUES (user_id, product_id, 1);
+    END IF;
+END;//
+DELIMETER   

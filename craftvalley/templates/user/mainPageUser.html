@@ -59,7 +59,7 @@
                     
                     <div class="number-of-ratings">★{{ product.rating }} - ({{ product.number_of_rating }})</div>
 
-                    <button type="button" class="btn btn-primary btn-sm">Add to Cart</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addToCart('{{ product.product_id }}')">Add to Cart</button>
                 </div>
             </div>
         {% endfor %}
@@ -176,6 +176,19 @@
                 starsHtml += `<label for="star${i}_${productId}" title="${i} stars">${i} stars</label>`;
             }
             return starsHtml;
+        }
+
+        function addToCart(productId){
+            $.ajax({
+                url: '/user/main',
+                type: 'POST',
+                data: {
+                    'productId': productId,
+                    'action': 'addToCart'
+                },
+                success: 
+                    console.log("Success")
+            });
         }
     </script>
 {% endblock %}
