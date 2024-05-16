@@ -2,30 +2,18 @@
     position: relative;
     top: 10vh;
     height: 20vh;
-    left: 3vw;
-    width: 94vw;
     padding-bottom: 3vh;
     padding-top: 2vh;
-    display: flex;
-    justify-content: space-between;
-    align-items: center; 
-}
-
-#filter-button {
-    position: fixed;
-    left: 2vw;
 }
 
 #filters {
     display: flex;
-    align-items: center; 
-    flex-grow: 1; 
-    justify-content: center; 
+    align-items: center;
+    justify-content: center;
 }
 
-#sort-button {
-    position: fixed;
-    right: 2vw;
+.filter {
+    margin: 0 10px; /* Adjust spacing as needed */
 }
 
 .product-container {

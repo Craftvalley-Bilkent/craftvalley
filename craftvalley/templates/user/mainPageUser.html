@@ -6,13 +6,21 @@
 {% endblock %}
 
 {% block content %}  
-    <div class="filter-area">
-        <button id="filter-button" >FILTER</button>
-        <button id="sort-button">SORT</button>
-        <div id="filters">
-            <option class="filter">filter1</option>
-            <option class="filter">filter2</option>
-            <option class="filter">filter3</option>
+    <div class="container filter-area">
+        <div class="row" >
+            <div class="col-2 text-left" style="position: fixed !important;">
+                <button id="filter-button" class="btn btn-primary">FILTER</button>
+            </div>
+            <div class="col-8 d-flex justify-content-center align-items-center">
+                <div id="filters" class="d-flex">
+                    <option class="filter">filter1</option>
+                    <option class="filter">filter2</option>
+                    <option class="filter">filter3</option>
+                </div>
+            </div>
+            <div class="col-2 text-right">
+                <button id="sort-button" class="btn btn-secondary">SORT</button>
+            </div>
         </div>
     </div>
 
