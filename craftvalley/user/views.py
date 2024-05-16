@@ -40,10 +40,11 @@ def showProducts(request):
 
         elif action == 'addToCart':
             productId = request.POST.get('productId')
+            amount = request.POST.get('amount')
             userId = 1
             delete_users()
             with connection.cursor() as cursor:
-                cursor.callproc('CartAdder', (userId, productId))
+                cursor.callproc('CartAdder', (userId, productId, amount))
                 
             connection.commit()
 
@@ -58,10 +59,10 @@ def showProducts(request):
 
     delete_all_products()
     product_data = [
-        (1, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (2, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (5, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (8, 'First Product', 'Very good product', 12.5, 78, image_data_2),
+        (1, 'Second Product', 'Bad product >:(', 250, 0, image_data_1),
+        (2, 'First Product', 'Very good product', 12.5, 0, image_data_2),
+        (5, 'Second Product', 'Bad product >:(', 250, 0, image_data_1),
+        (8, 'First Product', 'Very good product', 12.5, 0, image_data_2),
         (10, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
         (11, 'First Product', 'Very good product', 12.5, 78, image_data_2),
         (6, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
@@ -87,7 +88,7 @@ def showProducts(request):
     #TEST
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE amount > 0")
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product")
         row = cursor.fetchone()
     
     total_products = row[0]
