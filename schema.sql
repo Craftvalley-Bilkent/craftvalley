@@ -48,8 +48,6 @@ CREATE TABLE IF NOT EXISTS Product(
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
     amount 		INT NOT NULL,
-    rating      DECIMAL(2,1) NOT NULL,
-    number_of_rating    INT NOT NULL,
     images 		LONGBLOB,
     PRIMARY KEY(product_id)
 );
@@ -252,4 +250,23 @@ BEGIN
         VALUES (user_id, product_id, 1);
     END IF;
 END;//
-DELIMETER   
+DELIMETER
+
+DELIMITER //
+CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT)
+BEGIN
+    DECLARE avg_rating DECIMAL(3,2);
+    DECLARE num_rating INT;
+
+    SELECT product_id, AVG(star), COUNT(*)
+    INTO avg_rating, num_rating
+    FROM Rate
+    GROUP BY product_id;
+
+    SELECT P.product_id, P.title, P.description, P.price, P.amount, avg_rating AS average_rating, num_rating AS number_of_rating, P.images
+    FROM Product P
+    WHERE P.amount > 0
+    ORDER BY P.product_id DESC
+    LIMIT per_page OFFSET start_index;
+END;//
+DELIMITER ;
