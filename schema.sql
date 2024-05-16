@@ -232,7 +232,8 @@ CREATE TABLE IF NOT EXISTS Is_For(
 );
 
 
-DELIMETER //
+DELIMITER //
+
 CREATE PROCEDURE CartAdder(IN user_id INT, IN product_id INT)
 BEGIN
     DECLARE product_amount INT;
@@ -244,29 +245,27 @@ BEGIN
     IF product_amount > 0 THEN
         UPDATE Add_To_Shopping_Cart 
         SET count = count + 1 
-        WHERE product_id = product_id AND customer_id = user_id;
+        WHERE product_id = product_id AND user_id = user_id;
     ELSE
-        INSERT INTO Add_To_Shopping_Cart (customer_id, product_id, count) 
+        INSERT INTO Add_To_Shopping_Cart (user_id, product_id, count) 
         VALUES (user_id, product_id, 1);
     END IF;
 END;//
-DELIMETER
 
-DELIMITER //
 CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT)
 BEGIN
-    DECLARE avg_rating DECIMAL(3,2);
-    DECLARE num_rating INT;
-
-    SELECT product_id, AVG(star), COUNT(*)
-    INTO avg_rating, num_rating
-    FROM Rate
-    GROUP BY product_id;
-
-    SELECT P.product_id, P.title, P.description, P.price, P.amount, avg_rating AS average_rating, num_rating AS number_of_rating, P.images
+    SELECT P.product_id, P.title, P.description, P.price, P.amount, 
+           COALESCE(R.avg_rating, 0) AS average_rating, 
+           COALESCE(R.num_rating, 0) AS number_of_rating, P.images
     FROM Product P
+    LEFT JOIN (
+        SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
+        FROM Rate
+        GROUP BY product_id
+    ) R ON P.product_id = R.product_id
     WHERE P.amount > 0
     ORDER BY P.product_id DESC
     LIMIT per_page OFFSET start_index;
 END;//
+
 DELIMITER ;

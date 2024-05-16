@@ -80,7 +80,7 @@ def showProducts(request):
         (5000, 'First Product', 'Very good product', 12.5, 78, image_data_2)
     ]
     with connection.cursor() as cursor:
-        sql_query = "INSERT INTO Product(product_id, title, description, price, amount, images) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        sql_query = "INSERT INTO Product(product_id, title, description, price, amount, images) VALUES (%s, %s, %s, %s, %s, %s)"
 
         for data in product_data:
             cursor.execute(sql_query, data)
