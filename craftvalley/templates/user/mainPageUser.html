@@ -6,21 +6,33 @@
 {% endblock %}
 
 {% block content %}  
-    <div class="container filter-area">
-        <div class="row" >
-            <div class="col-2 text-left" style="position: fixed !important;">
-                <button id="filter-button" class="btn btn-primary">FILTER</button>
-            </div>
-            <div class="col-8 d-flex justify-content-center align-items-center">
-                <div id="filters" class="d-flex">
-                    <option class="filter">filter1</option>
-                    <option class="filter">filter2</option>
-                    <option class="filter">filter3</option>
-                </div>
-            </div>
-            <div class="col-2 text-right">
-                <button id="sort-button" class="btn btn-secondary">SORT</button>
-            </div>
+    <div id="filter-area-top">
+        <div id="filter-area-sort-area">
+            <button id="sort-price-asc">Sort Price↑</button>
+            <button id="sort-price-desc">Sort Price↓</button>
+            <button id="sort-date-asc">Sort Date↑</button>
+            <button id="sort-date-desc">Sort Date↓</button>
+        </div>
+
+        <div id="category-text-container">
+            <div class="category-text">JEWELERY</div>
+            <div class="sub-category-text">EAR RING</div>
+        </div>
+
+        <div id="filter-area-filter-area">
+            <form id="filter-area-search-bar">
+                <input type="text" placeholder="Business Name" name="search">
+            </form>
+
+            <form class="filter-area-min-price">
+                <input type="text" placeholder="Min Price" name="search">
+            </form>
+
+            <form class="filter-area-max-price">
+                <input type="text" placeholder="Max Price" name="search">
+            </form> 
+
+            <button id="filter-area-filter-button">Filter</button>
         </div>
     </div>
 
