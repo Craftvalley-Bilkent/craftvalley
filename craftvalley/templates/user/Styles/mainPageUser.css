@@ -4,11 +4,28 @@
     height: 20vh;
     left: 3vw;
     width: 94vw;
-    border-style: solid;
-    border-color: black;
     padding-bottom: 3vh;
     padding-top: 2vh;
-    padding-bottom: 2vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+#filter-button {
+    position: fixed;
+    left: 2vw;
+}
+
+#filters {
+    display: flex;
+    align-items: center; 
+    flex-grow: 1; 
+    justify-content: center; 
+}
+
+#sort-button {
+    position: fixed;
+    right: 2vw;
 }
 
 .product-container {
