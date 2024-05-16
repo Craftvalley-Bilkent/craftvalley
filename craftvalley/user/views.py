@@ -128,9 +128,35 @@ def showProducts(request):
         for data in product_data:
             cursor.execute(sql_query, data)
     #TEST
+    temp_query = "SELECT COUNT(*) AS numOfProducts FROM Product"
+    action = ""
+    business_name = ""
+    min_price = ""
+    max_price = ""
+
+    if request.method == 'GET':
+        action = request.GET.get('action')
+        
+        if action == 'isFiltered':
+            business_name = request.GET.get('business_name')
+            min_price = request.GET.get('min_price')
+            max_price = request.GET.get('max_price')
+
+            temp_query = """SELECT COUNT(*) AS numOfProducts FROM Product
+            JOIN Add_Product ON Product.product_id = Add_Product.product_id
+            JOIN Small_Business ON Add_Product.small_business_id = Small_Business.user_id
+            WHERE 1 = 1
+            """
+
+            if(business_name != ""):
+                temp_query = temp_query + "AND Small_Business.business_name LIKE " + business_name + "AND 2 = 2"
+            if(min_price != ""):                  
+                temp_query = temp_query + "AND Product.price >= " + float(min_price) + "AND 3 = 3"
+            if(max_price != ""):                  
+                temp_query = temp_query + "AND Product.price <= " + float(max_price)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product")
+        cursor.execute(temp_query)
         row = cursor.fetchone()
     
     total_products = row[0]
@@ -142,7 +168,15 @@ def showProducts(request):
     end_index = min(start_index + per_page, total_products)
 
     with connection.cursor() as cursor:
-        cursor.callproc("ProductPrinter", (per_page, start_index))
+        if (action == 'isFiltered'):
+            if(min_price == ""):
+                min_price = "0.00"
+            if(max_price == ""):
+                max_price = "99999999.99"
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price), float(max_price)))
+        else:
+            cursor.callproc("ProductPrinter", (per_page, start_index))
+        
         rows = cursor.fetchall()
 
     all_products = []
