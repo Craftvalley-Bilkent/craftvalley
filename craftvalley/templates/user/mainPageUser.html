@@ -21,18 +21,18 @@
 
         <div id="filter-area-filter-area">
             <form id="filter-area-search-bar">
-                <input type="text" placeholder="Business Name" name="search">
+                <input type="text" placeholder="Business Name" id="business_name" name="search">
             </form>
 
             <form class="filter-area-min-price">
-                <input type="text" placeholder="Min Price" name="search">
+                <input type="text" placeholder="Min Price" id="min_price" name="search">
             </form>
 
             <form class="filter-area-max-price">
-                <input type="text" placeholder="Max Price" name="search">
+                <input type="text" placeholder="Max Price" id="max_price" name="search">
             </form> 
 
-            <button id="filter-area-filter-button">Filter</button>
+            <button id="filter-area-filter-button" onclick="FilterProducts()">Filter</button>
         </div>
     </div>
 
@@ -118,6 +118,7 @@
 {% block scripts %}
     <script>
         const productsData = JSON.parse('{{ products|escapejs }}');
+        isFiltered = false;
 
         $(document).ready(function() {
             $(document).on('click', '.pagination .page-link', function(e) {
@@ -135,14 +136,38 @@
         });
 
         function loadProducts(page) {
-            $.ajax({
-                url: '/user/main',
-                data: {'page': page},
-                success: function(data) {
-                    $('.product-container').html($(data).find('.product-container').html());
-                    $('.pagination').html($(data).find('.pagination').html());
-                }
-            });
+            if(isFiltered)
+            {
+                $.ajax({
+                    url: '/user/main',
+                    data: {
+                        'page': page,
+                        'business_name': document.getElementById("business_name"),
+                        'min_price': document.getElementById("min_price"),
+                        'max_price': document.getElementById("max_price"),
+                        'action': 'isFiltered'
+                    },
+                    success: function(data) {
+                        $('.product-container').html($(data).find('.product-container').html());
+                        $('.pagination').html($(data).find('.pagination').html());
+                    }
+                });
+            }
+            else
+            {
+                $.ajax({
+                    url: '/user/main',
+                    data: {
+                        'page': page,
+                        'action': 'base'
+                    },
+                    success: function(data) {
+                        $('.product-container').html($(data).find('.product-container').html());
+                        $('.pagination').html($(data).find('.pagination').html());
+                    }
+                });
+            }
+            
         }
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount) {
             if(amount > 0)
@@ -226,6 +251,10 @@
                 success: 
                     console.log("Success")
             });
+        }
+
+        function FilterProducts() {
+            isFiltered = true
         }
     </script>
 {% endblock %}
