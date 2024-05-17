@@ -29,7 +29,7 @@ def register_as_business(request):
         except Exception as e:
             messages.error(request, f'Error: {e}')
 
-    return render(request, 'register_as_business.html')
+    return render(request, 'small_business/register_as_business.html')
 
 @login_required
 def create_product(request):
@@ -61,7 +61,7 @@ def create_product(request):
         except Exception as e:
             messages.error(request, f'Error: {e}')
 
-    return render(request, 'create_product.html')
+    return render(request, 'small_business/create_product.html')
 
 @login_required
 def list_products(request):
@@ -72,7 +72,7 @@ def list_products(request):
         """, [request.user.id])
         products = cursor.fetchall()
 
-    return render(request, 'list_products.html', {'products': products})
+    return render(request, 'small_business/list_products.html', {'products': products})
 
 @login_required
 def edit_product(request, product_id):
@@ -101,7 +101,7 @@ def edit_product(request, product_id):
         """, [product_id])
         product = cursor.fetchone()
 
-    return render(request, 'edit_product.html', {'product': product})
+    return render(request, 'small_business/edit_product.html', {'product': product})
 
 @login_required
 def delete_product(request, product_id):
@@ -126,4 +126,4 @@ def view_balance_history(request):
         """, [request.user.id])
         balance_history = cursor.fetchall()
 
-    return render(request, 'balance_history.html', {'balance_history': balance_history})
+    return render(request, 'small_business/balance_history.html', {'balance_history': balance_history})
