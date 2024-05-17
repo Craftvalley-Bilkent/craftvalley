@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Product{% endblock %}
+
+{% block content %}
+<div class="create-product-container">
+    <h1>Create Product</h1>
+    <form method="post" action="{% url 'create_product' %}">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="text" name="recipient" placeholder="Recipient" required>
+        <input type="text" name="materials" placeholder="Materials" required>
+        <input type="text" name="category" placeholder="Category" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="number" name="price" placeholder="Price" required>
+        <input type="number" name="amount" placeholder="Amount" required>
+        <button type="submit">Create Product</button>
+    </form>
+</div>
+{% endblock %}
