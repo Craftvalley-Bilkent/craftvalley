@@ -31,7 +31,7 @@ def register_as_business(request):
 
     return render(request, 'small_business/register_as_business.html')
 
-@login_required
+#@login_required
 def create_product(request):
     if request.method == 'POST':
         title = request.POST['title']
@@ -63,7 +63,7 @@ def create_product(request):
 
     return render(request, 'small_business/create_product.html')
 
-@login_required
+#@login_required
 def list_products(request):
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -74,7 +74,7 @@ def list_products(request):
 
     return render(request, 'small_business/list_products.html', {'products': products})
 
-@login_required
+#@login_required
 def edit_product(request, product_id):
     if request.method == 'POST':
         title = request.POST['title']
@@ -103,7 +103,7 @@ def edit_product(request, product_id):
 
     return render(request, 'small_business/edit_product.html', {'product': product})
 
-@login_required
+#@login_required
 def delete_product(request, product_id):
     try:
         with connection.cursor() as cursor:
@@ -117,7 +117,7 @@ def delete_product(request, product_id):
 
     return redirect('list_products')
 
-@login_required
+#@login_required
 def view_balance_history(request):
     with connection.cursor() as cursor:
         cursor.execute("""
