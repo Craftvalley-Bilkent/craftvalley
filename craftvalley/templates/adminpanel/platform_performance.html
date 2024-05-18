@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Platform Performance</title>
+</head>
+<body>
+    <h1>Platform Performance</h1>
+    <table class="table">
+        <tr>
+            <th>Total Users</th>
+            <th>Total Products</th>
+            <th>Total Transactions</th>
+        </tr>
+        {% for performance in platform_performance %}
+        <tr>
+            <td>{{ performance.0 }}</td>
+            <td>{{ performance.1 }}</td>
+            <td>{{ performance.2 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

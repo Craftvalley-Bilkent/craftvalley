@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <h2>Reported Businesses</h2>
+    <table class="table">
+        <tr>
+            <th>Business ID</th>
+            <th>Business Name</th>
+            <th>Customer ID</th>
+            <th>Report Description</th>
+            <th>Report Date</th>
+            <th>Action</th>
+            <th>Ban Details</th>
+        </tr>
+        {% for business in reported_businesses %}
+        <tr>
+            <td>{{ business.0 }}</td>
+            <td>{{ business.1 }}</td>
+            <td>{{ business.2 }}</td>
+            <td>{{ business.3 }}</td>
+            <td>{{ business.4 }}</td>
+            <td><a href="{% url 'ban_business' business.0 %}">Ban</a></td>
+            <td><button class="btn btn-info" data-toggle="modal" data-target="#banDetailsModal" onclick="fetchBanDetails({{ business.0 }})">Details</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>System Reports</h2>
+    <ul>
+        <li><a href="{% url 'popular_products' %}">Popular Products</a></li>
+        <li><a href="{% url 'user_trends' %}">User Trends</a></li>
+        <li><a href="{% url 'platform_performance' %}">Platform Performance</a></li>
+    </ul>
+
+    <!-- Ban Details Modal -->
+    <div class="modal fade" id="banDetailsModal" tabindex="-1" role="dialog" aria-labelledby="banDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="banDetailsModalLabel">Ban Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Business ID:</strong> <span id="banBusinessId"></span></p>
+                    <p><strong>Business Name:</strong> <span id="banBusinessName"></span></p>
+                    <p><strong>Ban Duration:</strong> <span id="banDuration"></span></p>
+                    <p><strong>Ban Date:</strong> <span id="banDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fetchBanDetails(businessId) {
+            $.ajax({
+                url: '{% url "ban_details" business_id=0 %}'.replace('0', businessId),
+                method: 'GET',
+                success: function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        $('#banBusinessId').text(data.business_id);
+                        $('#banBusinessName').text(data.business_name);
+                        $('#banDuration').text(data.ban_duration);
+                        $('#banDate').text(data.ban_date);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
