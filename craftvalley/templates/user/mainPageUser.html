@@ -127,14 +127,12 @@
 {% block scripts %}
     <script>
         const productsData = JSON.parse('{{ products|escapejs }}');
-        isFiltered = false;
-        sortMethod = 0;
 
         $(document).ready(function() {
             $(document).on('click', '.pagination .page-link', function(e) {
                 e.preventDefault();
                 var page = $(this).attr('href').split('page=')[1];
-                loadProducts(page);
+                loadProducts(page, 0, false);
             });
 
             $(document).on('click', function(e) {
@@ -145,15 +143,14 @@
             });
         });
 
-        function loadProducts(page) {
-            data = {'page': page, 'action': isFiltered ? 'isFiltered' : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
+        function loadProducts(page, sortMethod, isFiltered) {
+            data = {'page': page, 'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
             
             if (isFiltered) {
                 data['business_name'] = document.getElementById("business_name").value;
                 data['min_price'] = document.getElementById("min_price").value;
                 data['max_price'] = document.getElementById("max_price").value;
             }
-            console.log(sortMethod);
 
             $.ajax({
                 url: '/user/main',
@@ -254,14 +251,14 @@
             }
             else
             {
-                isFiltered = true;
-                loadProducts(1);
+                loadProducts(1, 0, true);
             } 
         }
 
         function SortProducts(method)
         {
-            sortMethod = method;
+            console.log(4545);
+            loadProducts(1, method, true);
         }
 
         function toggleWishlist(productId) {

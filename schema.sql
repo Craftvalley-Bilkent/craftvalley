@@ -297,9 +297,7 @@ BEGIN
         CASE 
             WHEN sort_method = 0 THEN P.product_id 
             WHEN sort_method = 1 THEN P.price 
-            WHEN sort_method = 2 THEN P.price 
             WHEN sort_method = 3 THEN P.product_id 
-            WHEN sort_method = 4 THEN P.product_id 
         END DESC,
         CASE
             WHEN sort_method = 2 THEN P.price 
