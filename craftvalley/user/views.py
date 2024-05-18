@@ -4,6 +4,7 @@ from django.db import connection
 import base64
 from django.views.decorators.csrf import csrf_exempt
 
+
 # Create your views here.
 def login(request):
     context = {
@@ -12,6 +13,55 @@ def login(request):
     }
     return render(request, "user/login.html", context=context)
 
+def delete_all_products():
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM Product")
+
+def delete_users():
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM User")
+        cursor.execute("INSERT INTO User (user_id, user_name, email, password, user_type, address, phone_number, active) VALUES (1, 'CustomerName', 'customer@example.com', 'customer_password', 'customer', '123 Customer St, City', '1234567890', 1)")
+        cursor.execute("INSERT INTO Customer (user_id, picture, payment_info, balance) VALUES (1, NULL, 'Credit Card: XXXX-XXXX-XXXX-XXXX', 0.00)")
+
+@csrf_exempt
+def showProducts(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        description = request.POST['description']
+        price = request.POST['price']
+        amount = request.POST['amount']
+        image = request.FILES['image'] if 'image' in request.FILES else None
+        
+        # Execute SQL queries to insert product into Product table
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Product (title, description, price, amount, images) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                [title, description, price, amount, image.read() if image else None]
+            )
+            # Retrieve the last inserted product_id
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            product_id = cursor.fetchone()[0]
+            
+            # Insert product_id and Small Business ID into Add_Product table
+            small_business_id = get_small_business_id_for_user(request.user)
+            cursor.execute(
+                "INSERT INTO Add_Product (product_id, small_business_id, post_date) "
+                "VALUES (%s, %s, CURDATE())",
+                [product_id, small_business_id]
+            )
+            
+            # Insert initial amount into Add_Amount table
+            cursor.execute(
+                "INSERT INTO Add_Amount (product_id, small_business_id, amount) "
+                "VALUES (%s, %s, %s)",
+                [product_id, small_business_id, amount]
+            )
+        
+        return redirect('product_list')
+    else:
+        return render(request, 'user/add_product.html')
+#TEST
 def delete_all_products():
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM Product")
