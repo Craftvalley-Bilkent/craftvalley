@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Small_Business (
     business_name 	VARCHAR(255) NOT NULL,
     title 		VARCHAR(255) NOT NULL,
     description 	VARCHAR(255), 
-    picture 		BLOB,
+    picture 		LONGBLOB,
     balance 		DECIMAL(10,2),
     PRIMARY KEY(user_id),
     FOREIGN KEY(user_id) REFERENCES User(user_id) ON DELETE CASCADE
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Small_Business (
 
 CREATE TABLE IF NOT EXISTS Customer(
     user_id 		INT NOT NULL,
-    picture 		BLOB,
+    picture 		LONGBLOB,
     payment_info 	VARCHAR(255) NOT NULL,
     balance 		DECIMAL(10,2) NOT NULL,
     PRIMARY KEY(user_id),
