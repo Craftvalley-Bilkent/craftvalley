@@ -17,6 +17,18 @@
         .card-header {
             background-color: #f8f9fa;
         }
+        .status-allowed {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .status-banned {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 5px;
+            border-radius: 4px;
+        }
     </style>
 {% endblock %}
 
@@ -37,6 +49,7 @@
                         <th>Customer ID</th>
                         <th>Report Description</th>
                         <th>Report Date</th>
+                        <th>Status</th>
                         <th>Action</th>
                         <th>Ban Details</th>
                     </tr>
@@ -50,13 +63,30 @@
                             <td>{{ business.2 }}</td>
                             <td>{{ business.3 }}</td>
                             <td>{{ business.4 }}</td>
-                            <td><a href="{% url 'ban_business' business.0 %}" class="btn btn-danger btn-sm">Ban</a></td>
-                            <td><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#banDetailsModal" onclick="fetchBanDetails({{ business.0 }})">Details</button></td>
+                            <td>
+                                {% if business.5 == 'ALLOWED' %}
+                                    <span class="status-allowed">ALLOWED</span>
+                                {% else %}
+                                    <span class="status-banned">BANNED</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if business.5 == 'ALLOWED' %}
+                                    <a href="{% url 'ban_business' business.0 %}" class="btn btn-danger btn-sm">Ban</a>
+                                {% else %}
+                                    <a href="{% url 'unban_business' business.0 %}" class="btn btn-warning btn-sm">Unban</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if business.5 != 'ALLOWED' %}
+                                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#banDetailsModal" onclick="fetchBanDetails({{ business.0 }})">Details</button>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="7" class="text-center">No reported businesses found.</td>
+                            <td colspan="8" class="text-center">No reported businesses found.</td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -342,5 +372,12 @@
                 }
             });
         }
+
+        $('#banDetailsModal').on('hidden.bs.modal', function () {
+            $('#banBusinessId').text('');
+            $('#banBusinessName').text('');
+            $('#banDuration').text('');
+            $('#banDate').text('');
+        });
     </script>
 {% endblock %}
