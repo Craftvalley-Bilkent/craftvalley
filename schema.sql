@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Small_Business (
     business_name 	VARCHAR(255) NOT NULL,
     title 		VARCHAR(255) NOT NULL,
     description 	VARCHAR(255), 
-    picture 		BLOB,
+    picture 		LONGBLOB,
     balance 		DECIMAL(10,2),
     PRIMARY KEY(user_id),
     FOREIGN KEY(user_id) REFERENCES User(user_id) ON DELETE CASCADE
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Small_Business (
 
 CREATE TABLE IF NOT EXISTS Customer(
     user_id 		INT NOT NULL,
-    picture 		BLOB,
+    picture 		LONGBLOB,
     payment_info 	VARCHAR(255) NOT NULL,
     balance 		DECIMAL(10,2) NOT NULL,
     PRIMARY KEY(user_id),
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Product(
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
     amount 		INT NOT NULL,
-    images 		BLOB,
+    images 		LONGBLOB,
     PRIMARY KEY(product_id)
 );
 
@@ -232,4 +232,62 @@ CREATE TABLE IF NOT EXISTS Is_For(
 );
 
 
+DELIMITER //
 
+CREATE PROCEDURE CartAdder(IN customer_id INT, IN product_id INT, IN product_amount INT)
+BEGIN
+    DECLARE product_amount INT;
+
+    SELECT COUNT(*) INTO product_amount 
+    FROM Add_To_Shopping_Cart AS A 
+    WHERE A.product_id = product_id AND A.customer_id = customer_id;
+
+    IF product_amount > 0 THEN
+        UPDATE Add_To_Shopping_Cart 
+        SET count = count + product_amount 
+        WHERE product_id = product_id AND customer_id = customer_id;
+
+        UPDATE Product
+        SET amount = amount - product_amount
+        WHERE product_id = product_id AND customer_id = customer_id;
+    ELSE
+        INSERT INTO Add_To_Shopping_Cart (customer_id, product_id, count) 
+        VALUES (customer_id, product_id, product_amount);
+    END IF;
+END;//
+
+CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT)
+BEGIN
+    SELECT P.product_id, P.title, P.description, P.price, P.amount, 
+           ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
+           COALESCE(R.num_rating, 0) AS number_of_rating, P.images
+    FROM Product P
+    LEFT JOIN (
+        SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
+        FROM Rate
+        GROUP BY product_id
+    ) R ON P.product_id = R.product_id
+    ORDER BY P.product_id DESC
+    LIMIT per_page OFFSET start_index;
+END;//
+
+CREATE PROCEDURE ProductFilter(IN per_page INT, IN start_index INT, IN filter_business_name VARCHAR(255), IN filter_min_price DECIMAL(10,2), IN filter_max_price DECIMAL(10,2))
+BEGIN
+    SELECT P.product_id, P.title, P.description, P.price, P.amount, 
+           ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
+           COALESCE(R.num_rating, 0) AS number_of_rating, P.images
+    FROM Product P
+    LEFT JOIN (
+        SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
+        FROM Rate
+        GROUP BY product_id
+    ) R ON P.product_id = R.product_id
+    JOIN Add_Product AP ON P.product_id = AP.product_id
+    JOIN Small_Business SB ON AP.small_business_id = SB.user_id
+    WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
+    AND P.price BETWEEN filter_min_price AND filter_max_price
+    ORDER BY P.product_id DESC
+    LIMIT per_page OFFSET start_index;
+END;//
+
+DELIMITER ;
