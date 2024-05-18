@@ -209,15 +209,16 @@ def showProducts(request):
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
+    sub_category = [{'sub_category_name': 'sub1'},{'sub_category_name': 'sub1'},{'sub_category_name': 'sub1'}]
     all_categories = [
-        {'category_name': 'category1'},
-        {'category_name': 'category2'},
-        {'category_name': 'category3'},
-        {'category_name': 'category4'},
-        {'category_name': 'category5'},
-        {'category_name': 'category6'},
-        {'category_name': 'category7'},
-        {'category_name': 'category8'}
+        {'category_name': 'category1', 'sub_categories': sub_category},
+        {'category_name': 'category2', 'sub_categories': sub_category},
+        {'category_name': 'category3', 'sub_categories': sub_category},
+        {'category_name': 'category4', 'sub_categories': sub_category},
+        {'category_name': 'category5', 'sub_categories': sub_category},
+        {'category_name': 'category6', 'sub_categories': sub_category},
+        {'category_name': 'category7', 'sub_categories': sub_category},
+        {'category_name': 'category8', 'sub_categories': sub_category}
     ]
 
 
@@ -245,3 +246,40 @@ def showProducts(request):
 
 def showCart(request):
     return render(request, "user/shoppingCart.html")
+
+def showTransactions(request):
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE user_id = 1")
+        row = cursor.fetchone()
+    
+    total_products = row[0]
+    per_page = 16
+    total_pages = (total_products + per_page - 1) // per_page 
+    current_page = int(request.GET.get('page', 1))
+    start_index = max(0, (current_page - 1) * per_page)
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 1 ORDER BY P.product_id DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
+        rows = cursor.fetchall()
+
+    all_products = []
+    for row in rows:
+        product = {
+            'product_id': row[0],
+            'title': row[1],
+            'images': base64.b64encode(row[2]).decode() if row[2] else None,
+            'description': row[3],
+            'price': row[4],
+            'business_id': row[5],
+            'business_name': row[6],
+            'transaction_date': row[7],
+            'amount': row[8],
+            'status': row[9],
+            'rating': row[10],
+        }
+        all_products.append(product)
+
+    page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
+
+    return render(request, "user/transactions.html", {'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
