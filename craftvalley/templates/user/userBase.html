@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Craftvalley</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'userBase.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+    {% block styles %}
+    {% endblock %}
+</head>
+<body id="base-body" style="background-color: #FFF7F1; z-index: 100; position: sticky !important;">
+    <ul id="top-bar-category-list" style="display: none;">
+        <li>Category 1</li>
+        <li>Category 2</li>
+        <li>Category 3</li>
+        <li>Category 4</li>
+        <li>Category 5</li>
+        <li>Category 6</li>
+        <li>Category 7</li>
+        <li>Category 8</li>
+    </ul>
+    <script>
+        document.addEventListener('click', function(event) {
+            var button = document.getElementById('top-bar-category-button');
+            var list = document.getElementById('top-bar-category-list');
+            if (button.contains(event.target)) {
+                list.style.display = list.style.display === 'none' ? 'block' : 'none';
+            } else if (!list.contains(event.target)) {
+                list.style.display = 'none';
+            }
+        });
+    </script>
+    <div class="top-bar">
+        <a class="top-bar-button" href="/user/main" style="grid-column: 1 / span 3;">
+            <img src="{% static 'Banner.svg' %}" alt="Search Icon" style="height: 100%; width: 100;">
+        </a>
+
+        <button id="top-bar-category-button" style="grid-column: 4 / span 2;">
+            <img src="{% static 'Categories.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
+        </button>
+
+        <form class="top-bar-search-bar" style="grid-column: 7 / span 9;">
+            <input type="text" placeholder="Search..." name="search">
+            <button type="submit">
+                <img src="{% static 'SearchButton.svg' %}" alt="Search Icon" style="height: 75%; width: 75%;">
+            </button>
+        </form>
+
+        <a class="top-bar-button" style="grid-column: 17;">
+            <img src="{% static 'SignIn.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
+        </a>
+
+        <a class="top-bar-button" href="/user/cart" style="grid-column: 19;">
+            <img src="{% static 'ShoppingCart.svg' %}" alt="Search Icon" style="height: 50%; width: 50%; margin-top: 12.5%;">
+        </a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    {% block scripts %}
+    {% endblock %}
+    <div class="top-bar-container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
