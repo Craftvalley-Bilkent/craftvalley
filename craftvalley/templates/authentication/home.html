@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="text-center">Home</h2>
+            {% if request.session.user_id %}
+                <p>Welcome, {{ request.session.user_name }}</p>
+                <p>Your user type is: {{ request.session.user_type }}</p>
+            {% else %}
+                <p>Please log in to see your information.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
