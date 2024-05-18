@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="text-center">Edit Business Profile</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="business_name" class="form-label">Business Name</label>
+                    <input type="text" class="form-control" id="business_name" name="business_name" value="{{ business.0 }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ business.1 }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" required>{{ business.2 }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
