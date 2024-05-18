@@ -84,6 +84,16 @@
                     </div>
                     
                     <div class="number-of-ratings">★{{ product.rating }} - ({{ product.number_of_rating }})</div>
+
+                    {% if product.isWished == 0 %}    
+                        <button id="wishlistButton_{{product.product_id}}" class="btn btn-outline-primary btn-sm" onclick="toggleWishlist('{{ product.product_id }}')">
+                            Add to Wishlist
+                        </button>
+                    {% else %}
+                        <button id="wishlistButton_{{product.product_id}}" class="btn btn-danger wishlist-active btn-sm" onclick="toggleWishlist('{{ product.product_id }}')">
+                            In the Wishlist
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
@@ -136,38 +146,25 @@
         });
 
         function loadProducts(page) {
-            if(isFiltered)
-            {
-                $.ajax({
-                    url: '/user/main',
-                    data: {
-                        'page': page,
-                        'business_name': document.getElementById("business_name"),
-                        'min_price': document.getElementById("min_price"),
-                        'max_price': document.getElementById("max_price"),
-                        'action': 'isFiltered'
-                    },
-                    success: function(data) {
-                        $('.product-container').html($(data).find('.product-container').html());
-                        $('.pagination').html($(data).find('.pagination').html());
-                    }
-                });
-            }
-            else
-            {
-                $.ajax({
-                    url: '/user/main',
-                    data: {
-                        'page': page,
-                        'action': 'base'
-                    },
-                    success: function(data) {
-                        $('.product-container').html($(data).find('.product-container').html());
-                        $('.pagination').html($(data).find('.pagination').html());
-                    }
-                });
-            }
+            data = {'page': page, 'action': isFiltered ? 'isFiltered' : 'base'};
             
+            if (isFiltered) {
+                data['business_name'] = document.getElementById("business_name").value;
+                data['min_price'] = document.getElementById("min_price").value;
+                data['max_price'] = document.getElementById("max_price").value;
+                console.log(business_name);
+                console.log(min_price);
+                console.log(max_price);
+            }
+
+            $.ajax({
+                url: '/user/main',
+                data: data,
+                success: function(data) {
+                    $('.product-container').html($(data).find('.product-container').html());
+                    $('.pagination').html($(data).find('.pagination').html());
+                }
+            });
         }
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount) {
             if(amount > 0)
@@ -211,12 +208,10 @@
                     overlay.style.display = 'none';
                 };
             }
-
             else
             {
                 alert("This product is not available right now.");
             }
-            
         }
 
         function closePopup() {
@@ -254,7 +249,45 @@
         }
 
         function FilterProducts() {
-            isFiltered = true
+            min_price = document.getElementById("min_price").value;
+            max_price = document.getElementById("max_price").value;
+            if (parseFloat(max_price) < parseFloat(min_price)) {
+                alert("Minimum Price cannot be higher than Maximum Price");
+            }
+            else
+            {
+                isFiltered = true;
+                loadProducts(1);
+            } 
+        }
+
+        function toggleWishlist(productId) {
+            var button = document.getElementById('wishlistButton_' + productId);
+            var isActive = button.classList.contains('wishlist-active');
+
+            if (isActive) {
+                button.textContent = 'Add to Wishlist';
+                button.classList.remove('wishlist-active');
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-outline-primary');
+            } else {
+                button.textContent = 'In the Wishlist';
+                button.classList.add('wishlist-active');
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-danger');
+            }
+
+            $.ajax({
+                url: '/user/main',
+                type: 'POST',
+                data: {
+                    'productId': productId,
+                    'isActive': isActive,
+                    'action': 'addToWishlist'
+                },
+                success: 
+                    console.log("Success")
+            });
         }
     </script>
 {% endblock %}

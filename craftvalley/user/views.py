@@ -47,7 +47,17 @@ def showProducts(request):
                 cursor.callproc('CartAdder', (userId, productId, amount))
                 
             connection.commit()
-
+        elif action == 'addToWishlist':
+            productId = request.POST.get('productId')
+            isActive = request.POST.get('isActive')
+            userId = 1
+            delete_users()
+            with connection.cursor() as cursor:
+                if(isActive == True):
+                    cursor.execute("DELETE FROM Wish Where product_id = " + str(productId) + " AND customer_id = " + str(userId))
+                else:
+                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(" + str(userId) + ", " + str(productId) + ")")
+            
     image_path_1 = 'first_product_image.jpg'
     image_path_2 = 'second_product_image.jpg'
 
@@ -107,11 +117,11 @@ def showProducts(request):
             """
 
             if(business_name != ""):
-                temp_query = temp_query + "AND Small_Business.business_name LIKE " + business_name + "AND 2 = 2"
+                temp_query = temp_query + " AND Small_Business.business_name LIKE " + business_name + "AND 2 = 2"
             if(min_price != ""):                  
-                temp_query = temp_query + "AND Product.price >= " + float(min_price) + "AND 3 = 3"
+                temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
             if(max_price != ""):                  
-                temp_query = temp_query + "AND Product.price <= " + float(max_price)
+                temp_query = temp_query + " AND Product.price <= " + max_price
 
     with connection.cursor() as cursor:
         cursor.execute(temp_query)
@@ -123,15 +133,10 @@ def showProducts(request):
     total_pages = (total_products + per_page - 1) // per_page 
     current_page = int(request.GET.get('page', 1))
     start_index = max(0, (current_page - 1) * per_page)
-    end_index = min(start_index + per_page, total_products)
 
     with connection.cursor() as cursor:
         if (action == 'isFiltered'):
-            if(min_price == ""):
-                min_price = "0.00"
-            if(max_price == ""):
-                max_price = "99999999.99"
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price), float(max_price)))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99)))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index))
         
@@ -148,6 +153,7 @@ def showProducts(request):
             'rating': row[5],
             'number_of_rating': row[6],
             'images': base64.b64encode(row[7]).decode() if row[7] else None,
+            'isWished': 0,
         }
         all_products.append(product)
 
@@ -164,6 +170,27 @@ def showProducts(request):
         {'category_name': 'category8'}
     ]
 
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 1")
+        rows = cursor.fetchall()
+
+    all_wished_products = []
+    for row in rows:
+        wished_product = {
+            'product_id': row[0],
+        }
+        all_wished_products.append(wished_product)
+    i = 0
+    j = 0
+    while (j < len(all_wished_products)) and i < 16:
+        if(all_wished_products[j][0] == all_products[i][0]):
+            all_products[i][8] = 1
+            i += 1
+            j += 1
+        else:
+            i += 1
+    
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
 
 def showCart(request):
