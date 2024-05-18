@@ -4,7 +4,7 @@
 {% block title %}Create Product{% endblock %}
 
 {% block content %}
-<form method="post" action="{% url 'create_product' %}" enctype="multipart/form-data">
+<form id="productForm" method="post" action="{% url 'create_product' %}" enctype="multipart/form-data">
     {% csrf_token %}
     <label for="title">Product Title:</label>
     <input type="text" id="title" name="title" required>
@@ -24,4 +24,26 @@
     <input type="file" id="image" name="image" accept="image/*" required>
     <button type="submit">Create Product</button>
 </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function addProduct(){
+        var formData = new FormData(document.getElementById('productForm'));
+
+        $.ajax({
+            url: '{% url "create_product" %}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+    </script>
 {% endblock %}

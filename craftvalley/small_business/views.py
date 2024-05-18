@@ -17,18 +17,21 @@ def create_product(request):
         amount = request.POST['amount']
         
         try:
+            image = request.FILES['image']  
+            image_data = image.read()  
+            
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO Product (title, description, price, amount)
-                    VALUES (%s, %s, %s, %s)
-                """, [title, description, price, amount])
+                    INSERT INTO Product (title, description, price, amount, images)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, [title, description, price, amount, image_data])
 
                 product_id = cursor.lastrowid
 
                 cursor.execute("""
                     INSERT INTO Add_Product (product_id, small_business_id, post_date)
                     VALUES (%s, %s, NOW())
-                """, [product_id,  request.session.get("user_id")])
+                """, [product_id, request.session.get("user_id")])
 
                 messages.success(request, 'Product created successfully!')
                 return redirect('list_products')
