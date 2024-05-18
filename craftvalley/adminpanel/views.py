@@ -110,7 +110,7 @@ def admin_dashboard(request):
 # @login_required
 # @admin_only
 def ban_business(request, business_id):
-    admin_id = 11  # Assuming the logged-in user is an admin
+    admin_id = request.user.id  # Assuming the logged-in user is an admin
     ban_duration = "Indefinite"
     raw_sql_query("""
         INSERT INTO Ban (admin_id, small_business_id, ban_duration, ban_date)
