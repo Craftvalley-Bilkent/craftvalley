@@ -271,7 +271,7 @@ BEGIN
     LIMIT per_page OFFSET start_index;
 END;//
 
-CREATE PROCEDURE ProductFilter(IN per_page INT, IN start_index INT, IN filter_business_name VARCHAR(255), IN filter_min_price DECIMAL(10,2), IN filter_max_price DECIMAL(10,2))
+CREATE PROCEDURE ProductFilter(IN per_page INT, IN start_index INT, IN filter_business_name VARCHAR(255), IN filter_min_price DECIMAL(10,2), IN filter_max_price DECIMAL(10,2), IN sort_method INT)
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 
            ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 

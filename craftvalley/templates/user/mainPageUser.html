@@ -263,17 +263,20 @@
         function toggleWishlist(productId) {
             var button = document.getElementById('wishlistButton_' + productId);
             var isActive = button.classList.contains('wishlist-active');
+            situation = ""
 
             if (isActive) {
                 button.textContent = 'Add to Wishlist';
                 button.classList.remove('wishlist-active');
                 button.classList.remove('btn-danger');
                 button.classList.add('btn-outline-primary');
+                situation = "remove"
             } else {
                 button.textContent = 'In the Wishlist';
                 button.classList.add('wishlist-active');
                 button.classList.remove('btn-outline-primary');
                 button.classList.add('btn-danger');
+                situation = "add"
             }
 
             $.ajax({
@@ -281,7 +284,7 @@
                 type: 'POST',
                 data: {
                     'productId': productId,
-                    'isActive': isActive,
+                    'situation': situation,
                     'action': 'addToWishlist'
                 },
                 success: 

@@ -16,54 +16,6 @@ def login(request):
 
 
 # Add product
-def add_product(request):
-    if request.method == 'POST':
-        title = request.POST['title']
-        description = request.POST['description']
-        price = request.POST['price']
-        amount = request.POST['amount']
-        image = request.FILES['image'] if 'image' in request.FILES else None
-        
-        # Execute SQL queries to insert product into Product table
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO Product (title, description, price, amount, images) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                [title, description, price, amount, image.read() if image else None]
-            )
-            # Retrieve the last inserted product_id
-            cursor.execute("SELECT LAST_INSERT_ID()")
-            product_id = cursor.fetchone()[0]
-            
-            # Insert product_id and Small Business ID into Add_Product table
-            small_business_id = get_small_business_id_for_user(request.user)
-            cursor.execute(
-                "INSERT INTO Add_Product (product_id, small_business_id, post_date) "
-                "VALUES (%s, %s, CURDATE())",
-                [product_id, small_business_id]
-            )
-            
-            # Insert initial amount into Add_Amount table
-            cursor.execute(
-                "INSERT INTO Add_Amount (product_id, small_business_id, amount) "
-                "VALUES (%s, %s, %s)",
-                [product_id, small_business_id, amount]
-            )
-        
-        return redirect('product_list')
-    else:
-        return render(request, 'user/add_product.html')
-#TEST
-def delete_all_products():
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM Product")
-
-def delete_users():
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM User")
-        cursor.execute("INSERT INTO User (user_id, user_name, email, password, user_type, address, phone_number, active) VALUES (1, 'CustomerName', 'customer@example.com', 'customer_password', 'customer', '123 Customer St, City', '1234567890', 1)")
-        cursor.execute("INSERT INTO Customer (user_id, picture, payment_info, balance) VALUES (1, NULL, 'Credit Card: XXXX-XXXX-XXXX-XXXX', 0.00)")
-
 @csrf_exempt
 def showProducts(request):
     if request.method == 'POST':
@@ -72,8 +24,7 @@ def showProducts(request):
         if action == 'postRating':
             productId = request.POST.get('product_id')
             ratingValue = request.POST.get('rating')
-            userId = 1
-            delete_users()
+            userId = 3
             with connection.cursor() as cursor:
                 product_data = [(userId, productId, ratingValue)]
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
@@ -83,60 +34,20 @@ def showProducts(request):
         elif action == 'addToCart':
             productId = request.POST.get('productId')
             amount = request.POST.get('amount')
-            userId = 1
-            delete_users()
+            userId = 3
             with connection.cursor() as cursor:
                 cursor.callproc('CartAdder', (userId, productId, amount))
                 
             connection.commit()
         elif action == 'addToWishlist':
             productId = request.POST.get('productId')
-            isActive = request.POST.get('isActive')
-            userId = 1
-            delete_users()
+            situation = request.POST.get('situation')
+            userId = 3
             with connection.cursor() as cursor:
-                if(isActive == True):
+                if(situation == "remove"):
                     cursor.execute("DELETE FROM Wish Where product_id = " + str(productId) + " AND customer_id = " + str(userId))
                 else:
                     cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(" + str(userId) + ", " + str(productId) + ")")
-            
-    image_path_1 = 'first_product_image.jpg'
-    image_path_2 = 'second_product_image.jpg'
-
-    with open(image_path_1, 'rb') as image_file_1:
-        image_data_1 = image_file_1.read()
-
-    with open(image_path_2, 'rb') as image_file_2:
-        image_data_2 = image_file_2.read()
-
-    delete_all_products()
-    product_data = [
-        (1, 'Second Product', 'Bad product >:(', 250, 0, image_data_1),
-        (2, 'First Product', 'Very good product', 12.5, 0, image_data_2),
-        (5, 'Second Product', 'Bad product >:(', 250, 0, image_data_1),
-        (8, 'First Product', 'Very good product', 12.5, 0, image_data_2),
-        (10, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (11, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (6, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (7, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (12, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (19, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (20, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (87, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (24, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (59, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (67, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (53, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (644, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (57, 'First Product', 'Very good product', 12.5, 78, image_data_2),
-        (6111, 'Second Product', 'Bad product >:(', 250, 74, image_data_1),
-        (5000, 'First Product', 'Very good product', 12.5, 78, image_data_2)
-    ]
-    with connection.cursor() as cursor:
-        sql_query = "INSERT INTO Product(product_id, title, description, price, amount, images) VALUES (%s, %s, %s, %s, %s, %s)"
-
-        for data in product_data:
-            cursor.execute(sql_query, data)
     #TEST
     temp_query = "SELECT COUNT(*) AS numOfProducts FROM Product"
     action = ""
@@ -159,7 +70,7 @@ def showProducts(request):
             """
 
             if(business_name != ""):
-                temp_query = temp_query + " AND Small_Business.business_name LIKE " + business_name + "AND 2 = 2"
+                temp_query = temp_query + " AND Small_Business.business_name LIKE('% " + business_name + " %')  AND 2 = 2"
             if(min_price != ""):                  
                 temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
             if(max_price != ""):                  
@@ -215,7 +126,7 @@ def showProducts(request):
 
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 1")
+        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 3")
         rows = cursor.fetchall()
 
     all_wished_products = []
@@ -226,9 +137,9 @@ def showProducts(request):
         all_wished_products.append(wished_product)
     i = 0
     j = 0
-    while (j < len(all_wished_products)) and i < 16:
-        if(all_wished_products[j][0] == all_products[i][0]):
-            all_products[i][8] = 1
+    while (j < len(all_wished_products)) and (i < len(all_products)):
+        if(all_wished_products[j]['product_id'] == all_products[i]['product_id']):
+            all_products[i]['isWished'] = 1
             i += 1
             j += 1
         else:
@@ -242,7 +153,7 @@ def showCart(request):
 def showTransactions(request):
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE user_id = 1")
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE user_id = 3")
         row = cursor.fetchone()
     
     total_products = row[0]
@@ -252,7 +163,7 @@ def showTransactions(request):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 1 ORDER BY P.product_id DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
+        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 3 ORDER BY P.product_id DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
         rows = cursor.fetchall()
 
     all_products = []
