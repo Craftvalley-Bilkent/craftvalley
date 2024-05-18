@@ -33,6 +33,7 @@ SECRET_KEY = "django-insecure-z)-iar6ct=u1)58&xs+&n%#7ft%@d$#^@7(xn7_@0c94(lxz8e
 DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+#ALLOWED_HOSTS = ['*']
 
 
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "user",
+    "small_business",
     "authentication",
 ]
 
@@ -129,7 +131,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+#STATICFILES_DIRS = [BASE_DIR / "static"] 
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

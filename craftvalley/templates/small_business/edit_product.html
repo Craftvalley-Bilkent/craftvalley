@@ -1,0 +1,18 @@
+
+{% extends 'small_business/userBase.html' %}
+{% load static %}
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="edit-product-container">
+    <h1>Edit Product</h1>
+    <form method="post" action="{% url 'edit_product' product.0 %}">
+        {% csrf_token %}
+        <input type="text" name="title" value="{{ product.1 }}" placeholder="Title" required>
+        <textarea name="description" placeholder="Description" required>{{ product.2 }}</textarea>
+        <input type="number" name="price" value="{{ product.3 }}" placeholder="Price" required>
+        <input type="number" name="amount" value="{{ product.4 }}" placeholder="Amount" required>
+        <button type="submit">Update Product</button>
+    </form>
+</div>
+{% endblock %}
