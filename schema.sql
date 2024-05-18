@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Admin(
 );
 
 CREATE TABLE IF NOT EXISTS Product(
-    product_id 	INT NOT NULL,
+    product_id 	INT NOT NULL AUTO_INCREMENT,
     title 		VARCHAR(255) NOT NULL,
     description 	VARCHAR(255),
     price 		DECIMAL(10,2) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS Product(
 );
 
 CREATE TABLE IF NOT EXISTS Balance_Record(
-    record_id		INT NOT NULL,
+    record_id		INT NOT NULL AUTO_INCREMENT,
     record_date 	DATE NOT NULL,
     record_type 	VARCHAR(255) NOT NULL,
     record_amount 	DECIMAL(10,2) NOT NULL,
@@ -61,27 +61,27 @@ CREATE TABLE IF NOT EXISTS Balance_Record(
 );
 
 CREATE TABLE IF NOT EXISTS Recipient(
-    recipient_id 		INT NOT NULL,
+    recipient_id 		INT NOT NULL AUTO_INCREMENT,
     recipient_name 		VARCHAR(255) NOT NULL,
     PRIMARY KEY(recipient_id),
            UNIQUE KEY(recipient_name)
 );
 
 CREATE TABLE IF NOT EXISTS Material(
-    material_id 	INT NOT NULL,
+    material_id 	INT NOT NULL AUTO_INCREMENT,
     material_name 	VARCHAR(255) NOT NULL,
     PRIMARY KEY(material_id),
     UNIQUE KEY(material_name)
 );
 
 CREATE TABLE IF NOT EXISTS Main_Category(
-    main_category_id 	INT NOT NULL,
+    main_category_id 	INT NOT NULL AUTO_INCREMENT,
     main_category_name 	VARCHAR(255) NOT NULL,
     PRIMARY KEY(main_category_id)
 );
 
 CREATE TABLE IF NOT EXISTS Sub_Category(
-    sub_category_id 	INT NOT NULL,
+    sub_category_id 	INT NOT NULL AUTO_INCREMENT,
     main_category_id 	INT NOT NULL,
     sub_category_name 	VARCHAR(255) NOT NULL,
     PRIMARY KEY(sub_category_id, main_category_id),
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS Ban(
 );
 
 CREATE TABLE IF NOT EXISTS System_Report(
-    report_id 		INT NOT NULL,
+    report_id 		INT NOT NULL AUTO_INCREMENT,
     report_title 		VARCHAR(255) NOT NULL,
     report_date 		DATE NOT NULL,    
     report_results		VARCHAR(255),
@@ -318,8 +318,7 @@ JOIN
 LEFT JOIN 
     Rate R ON T.customer_id = R.customer_id AND T.product_id = R.product_id;
 
-
--- Insert Users (Customers and Businesses)
+-- Insert Users (Customers, Businesses, and Admin)
 INSERT INTO User (user_name, email, password, user_type, address, phone_number, active)
 VALUES 
 ('Admin', 'admin@example.com', 'adminpassword', 'Admin', 'Admin Address', '555-0301', 1),
@@ -358,42 +357,42 @@ VALUES
 ((SELECT user_id FROM User WHERE email='biz5@example.com'), 'Biz5', 'Biz5 Title', 'Biz5 Description', NULL, 500.00);
 
 -- Insert Products for Businesses
-INSERT INTO Product (product_id, title, description, price, amount, images)
+INSERT INTO Product (title, description, price, amount, images)
 VALUES 
-(1, 'Product1 Biz1', 'Description Product1 Biz1', 10.00, 50, NULL),
-(2, 'Product2 Biz1', 'Description Product2 Biz1', 20.00, 30, NULL),
-(3, 'Product1 Biz2', 'Description Product1 Biz2', 15.00, 40, NULL),
-(4, 'Product2 Biz2', 'Description Product2 Biz2', 25.00, 20, NULL),
-(5, 'Product1 Biz3', 'Description Product1 Biz3', 30.00, 10, NULL),
-(6, 'Product2 Biz3', 'Description Product2 Biz3', 35.00, 5, NULL),
-(7, 'Product1 Biz4', 'Description Product1 Biz4', 40.00, 60, NULL),
-(8, 'Product2 Biz4', 'Description Product2 Biz4', 45.00, 15, NULL),
-(9, 'Product1 Biz5', 'Description Product1 Biz5', 50.00, 25, NULL),
-(10, 'Product2 Biz5', 'Description Product2 Biz5', 55.00, 35, NULL);
+('Product1 Biz1', 'Description Product1 Biz1', 10.00, 50, NULL),
+('Product2 Biz1', 'Description Product2 Biz1', 20.00, 30, NULL),
+('Product1 Biz2', 'Description Product1 Biz2', 15.00, 40, NULL),
+('Product2 Biz2', 'Description Product2 Biz2', 25.00, 20, NULL),
+('Product1 Biz3', 'Description Product1 Biz3', 30.00, 10, NULL),
+('Product2 Biz3', 'Description Product2 Biz3', 35.00, 5, NULL),
+('Product1 Biz4', 'Description Product1 Biz4', 40.00, 60, NULL),
+('Product2 Biz4', 'Description Product2 Biz4', 45.00, 15, NULL),
+('Product1 Biz5', 'Description Product1 Biz5', 50.00, 25, NULL),
+('Product2 Biz5', 'Description Product2 Biz5', 55.00, 35, NULL);
 
 -- Link Products with Businesses
 INSERT INTO Add_Product (product_id, small_business_id, post_date)
 VALUES 
-(1, (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
-(2, (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
-(3, (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
-(4, (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
-(5, (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
-(6, (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
-(7, (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
-(8, (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
-(9, (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
-(10, (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01');
+((SELECT product_id FROM Product WHERE title='Product1 Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01');
 
 -- Insert Transactions
 INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
 VALUES 
-(1, (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 2, 'Completed'),
-(2, (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 3, 'Completed'),
-(3, (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 1, 'Completed'),
-(4, (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 2, 'Completed'),
-(5, (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 3, 'Completed'),
-(6, (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 1, 'Completed');
+((SELECT product_id FROM Product WHERE title='Product1 Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 3, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz2'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz2'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Product1 Biz3'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 3, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Product2 Biz3'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 1, 'Completed');
 
 -- Insert Reports
 INSERT INTO Has_Reported (customer_id, small_business_id, report_description, report_date)
