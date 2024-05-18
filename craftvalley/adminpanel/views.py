@@ -14,13 +14,13 @@ def raw_sql_query(query, params=None):
 
 def admin_only(view_func):
     def _wrapped_view_func(request, *args, **kwargs):
-        if request.user.user_type != 'Admin':
+        if request.session.get('user_type') != 'Admin':
             return redirect('login')
         return view_func(request, *args, **kwargs)
     return _wrapped_view_func
 
 # @login_required
-# @admin_only
+@admin_only
 def admin_dashboard(request):
     reported_businesses = raw_sql_query("""
         SELECT B.user_id, B.business_name, C.user_id, H.report_description, H.report_date, 
@@ -108,9 +108,9 @@ def admin_dashboard(request):
     return render(request, 'adminpanel/dashboard.html', context)
 
 # @login_required
-# @admin_only
+@admin_only
 def ban_business(request, business_id):
-    admin_id = request.user.id  # Assuming the logged-in user is an admin
+    admin_id = request.session.get('user_id')
     ban_duration = "Indefinite"
     raw_sql_query("""
         INSERT INTO Ban (admin_id, small_business_id, ban_duration, ban_date)
@@ -119,7 +119,7 @@ def ban_business(request, business_id):
     return redirect('admin_dashboard')
 
 # @login_required
-# @admin_only
+@admin_only
 def ban_details(request, business_id):
     ban_details = raw_sql_query("""
         SELECT B.user_id, B.business_name, Ban.ban_duration, Ban.ban_date
@@ -132,7 +132,7 @@ def ban_details(request, business_id):
         return JsonResponse({'error': 'No ban details found.'})
 
 # @login_required
-# @admin_only
+@admin_only
 def unban_business(request, business_id):
     raw_sql_query("""
         DELETE FROM Ban
