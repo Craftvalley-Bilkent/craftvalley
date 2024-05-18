@@ -1,8 +1,13 @@
 FROM python:3.12
+
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /craftvalley
+
+# Set work directory
 WORKDIR /craftvalley
-ADD . /craftvalley/
-COPY requirements.txt .
+
+# Install dependencies
+COPY requirements.txt /craftvalley/
 RUN pip install -r requirements.txt
-COPY . .
+
+# Copy project files
+COPY . /craftvalley/

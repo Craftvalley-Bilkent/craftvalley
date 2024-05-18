@@ -1,0 +1,28 @@
+
+{% extends 'small_business/userBase.html' %}
+{% load static %}
+{% block title %}Balance History{% endblock %}
+
+{% block content %}
+<div class="balance-history-container">
+    <h1>Balance History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Record Date</th>
+                <th>Record Type</th>
+                <th>Record Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in balance_history %}
+            <tr>
+                <td>{{ record.1 }}</td>
+                <td>{{ record.2 }}</td>
+                <td>{{ record.3 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,5 +1,4 @@
-from django.shortcuts import render, redirect
-from django.db import connection
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
 import base64

@@ -1,0 +1,34 @@
+{% extends 'small_business/userBase.html' %}
+{% load static %}
+
+{% block title %}List Products{% endblock %}
+
+{% block content %}
+<h1>List of Products</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.0 }}</td>  <!-- product_id -->
+            <td>{{ product.1 }}</td>  <!-- title -->
+            <td>{{ product.2 }}</td>  <!-- description -->
+            <td>{{ product.3 }}</td>  <!-- price -->
+            <td>{{ product.4 }}</td>  <!-- amount -->
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No products found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
