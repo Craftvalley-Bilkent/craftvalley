@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+
 def register_as_business(request):
     if request.method == 'POST':
         user_name = request.POST['user_name']
@@ -54,12 +55,13 @@ def create_product(request):
                 cursor.execute("""
                     INSERT INTO Add_Product (product_id, small_business_id, post_date)
                     VALUES (%s, %s, NOW())
-                """, [product_id, request.user.id])
+                """, [product_id, request.user.pk])
 
                 messages.success(request, 'Product created successfully!')
                 return redirect('list_products')
         except Exception as e:
             messages.error(request, f'Error: {e}')
+            print(f'Error: {e}')  # Hata mesajlarını loglayın
 
     return render(request, 'small_business/create_product.html')
 
@@ -69,7 +71,7 @@ def list_products(request):
         cursor.execute("""
             SELECT * FROM Product
             WHERE product_id IN (SELECT product_id FROM Add_Product WHERE small_business_id = %s)
-        """, [request.user.id])
+        """, [request.user.pk])
         products = cursor.fetchall()
 
     return render(request, 'small_business/list_products.html', {'products': products})
