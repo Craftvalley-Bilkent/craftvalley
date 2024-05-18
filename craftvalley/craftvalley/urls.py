@@ -21,5 +21,6 @@ import user.urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("login/", include(user.urls.urlpatterns)),   
+    path("login/", include(user.urls.urlpatterns)),
+    path('auth/', include('authentication.urls')),   
 ]
