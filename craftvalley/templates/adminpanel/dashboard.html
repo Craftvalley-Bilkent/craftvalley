@@ -1,0 +1,346 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block styles %}
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+        }
+        .modal-footer {
+            background-color: #f8f9fa;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="mb-4">Admin Dashboard</h1>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            Reported Businesses
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Business ID</th>
+                        <th>Business Name</th>
+                        <th>Customer ID</th>
+                        <th>Report Description</th>
+                        <th>Report Date</th>
+                        <th>Action</th>
+                        <th>Ban Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if reported_businesses %}
+                        {% for business in reported_businesses %}
+                        <tr>
+                            <td>{{ business.0 }}</td>
+                            <td>{{ business.1 }}</td>
+                            <td>{{ business.2 }}</td>
+                            <td>{{ business.3 }}</td>
+                            <td>{{ business.4 }}</td>
+                            <td><a href="{% url 'ban_business' business.0 %}" class="btn btn-danger btn-sm">Ban</a></td>
+                            <td><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#banDetailsModal" onclick="fetchBanDetails({{ business.0 }})">Details</button></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">No reported businesses found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Popular Products
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Title</th>
+                        <th>Total Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if popular_products %}
+                        {% for product in popular_products %}
+                        <tr>
+                            <td>{{ product.0 }}</td>
+                            <td>{{ product.1 }}</td>
+                            <td>{{ product.2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No popular products found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            User Trends
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>Activity Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if user_trends %}
+                        {% for user in user_trends %}
+                        <tr>
+                            <td>{{ user.0 }}</td>
+                            <td>{{ user.1 }}</td>
+                            <td>{{ user.2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No user trends found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Platform Performance
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Total Users</th>
+                        <th>Total Products</th>
+                        <th>Total Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if platform_performance %}
+                        <tr>
+                            <td>{{ platform_performance.0 }}</td>
+                            <td>{{ platform_performance.1 }}</td>
+                            <td>{{ platform_performance.2 }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form method="get" class="mb-4">
+        <div class="form-row">
+            <div class="col">
+                <label for="date_from">From:</label>
+                <input type="date" id="date_from" name="date_from" class="form-control" value="{{ date_from }}">
+            </div>
+            <div class="col">
+                <label for="date_to">To:</label>
+                <input type="date" id="date_to" name="date_to" class="form-control" value="{{ date_to }}">
+            </div>
+        </div>
+        <div class="form-row mt-2">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Update Date Range</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Most and Least Sold Products in Date Range
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Title</th>
+                        <th>Total Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if most_least_sold_products %}
+                        <tr>
+                            <th colspan="3">Most Sold Products</th>
+                        </tr>
+                        {% for product in most_least_sold_products %}
+                            {% if forloop.counter0 == 0 %}
+                                <tr>
+                                    <td>{{ product.0 }}</td>
+                                    <td>{{ product.1 }}</td>
+                                    <td>{{ product.2 }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                            <th colspan="3">Least Sold Products</th>
+                        </tr>
+                        {% for product in most_least_sold_products|slice:"-1:" %}
+                            <tr>
+                                <td>{{ product.0 }}</td>
+                                <td>{{ product.1 }}</td>
+                                <td>{{ product.2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Most and Least Sold Businesses in Date Range
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Business ID</th>
+                        <th>Business Name</th>
+                        <th>Total Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if most_least_sold_businesses %}
+                        <tr>
+                            <th colspan="3">Most Sold Businesses</th>
+                        </tr>
+                        {% for business in most_least_sold_businesses %}
+                            {% if forloop.counter0 == 0 %}
+                                <tr>
+                                    <td>{{ business.0 }}</td>
+                                    <td>{{ business.1 }}</td>
+                                    <td>{{ business.2 }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                            <th colspan="3">Least Sold Businesses</th>
+                        </tr>
+                        {% for business in most_least_sold_businesses|slice:"-1:" %}
+                            <tr>
+                                <td>{{ business.0 }}</td>
+                                <td>{{ business.1 }}</td>
+                                <td>{{ business.2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Average Sales Per Product in Date Range
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Title</th>
+                        <th>Average Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if avg_sales_per_product %}
+                        {% for product in avg_sales_per_product %}
+                        <tr>
+                            <td>{{ product.0 }}</td>
+                            <td>{{ product.1 }}</td>
+                            <td>{{ product.2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ban Details Modal -->
+    <div class="modal fade" id="banDetailsModal" tabindex="-1" role="dialog" aria-labelledby="banDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="banDetailsModalLabel">Ban Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Business ID:</strong> <span id="banBusinessId"></span></p>
+                    <p><strong>Business Name:</strong> <span id="banBusinessName"></span></p>
+                    <p><strong>Ban Duration:</strong> <span id="banDuration"></span></p>
+                    <p><strong>Ban Date:</strong> <span id="banDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fetchBanDetails(businessId) {
+            $.ajax({
+                url: '{% url "ban_details" business_id=0 %}'.replace('0', businessId),
+                method: 'GET',
+                success: function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        $('#banBusinessId').text(data.business_id);
+                        $('#banBusinessName').text(data.business_name);
+                        $('#banDuration').text(data.ban_duration);
+                        $('#banDate').text(data.ban_date);
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}
