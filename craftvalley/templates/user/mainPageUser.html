@@ -8,10 +8,10 @@
 {% block content %}  
     <div id="filter-area-top">
         <div id="filter-area-sort-area">
-            <button id="sort-price-asc">Sort Price↑</button>
-            <button id="sort-price-desc">Sort Price↓</button>
-            <button id="sort-date-asc">Sort Date↑</button>
-            <button id="sort-date-desc">Sort Date↓</button>
+            <button id="sort-price-asc" onclick="SortProducts(1)">Sort Price↑</button>
+            <button id="sort-price-desc" onclick="SortProducts(2)">Sort Price↓</button>
+            <button id="sort-date-asc" onclick="SortProducts(3)">Sort Date↑</button>
+            <button id="sort-date-desc" onclick="SortProducts(4)">Sort Date↓</button>
         </div>
 
         <div id="category-text-container">
@@ -128,6 +128,7 @@
     <script>
         const productsData = JSON.parse('{{ products|escapejs }}');
         isFiltered = false;
+        sortMethod = 0;
 
         $(document).ready(function() {
             $(document).on('click', '.pagination .page-link', function(e) {
@@ -145,16 +146,14 @@
         });
 
         function loadProducts(page) {
-            data = {'page': page, 'action': isFiltered ? 'isFiltered' : 'base'};
+            data = {'page': page, 'action': isFiltered ? 'isFiltered' : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
             
             if (isFiltered) {
                 data['business_name'] = document.getElementById("business_name").value;
                 data['min_price'] = document.getElementById("min_price").value;
                 data['max_price'] = document.getElementById("max_price").value;
-                console.log(business_name);
-                console.log(min_price);
-                console.log(max_price);
             }
+            console.log(sortMethod);
 
             $.ajax({
                 url: '/user/main',
@@ -258,6 +257,11 @@
                 isFiltered = true;
                 loadProducts(1);
             } 
+        }
+
+        function SortProducts(method)
+        {
+            sortMethod = method;
         }
 
         function toggleWishlist(productId) {
