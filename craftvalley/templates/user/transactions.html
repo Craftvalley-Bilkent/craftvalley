@@ -6,36 +6,6 @@
 {% endblock %}
 
 {% block content %}  
-    <div id="filter-area-top">
-        <div id="filter-area-sort-area">
-            <button id="sort-price-asc">Sort Price↑</button>
-            <button id="sort-price-desc">Sort Price↓</button>
-            <button id="sort-date-asc">Sort Date↑</button>
-            <button id="sort-date-desc">Sort Date↓</button>
-        </div>
-
-        <div id="category-text-container">
-            <div class="category-text">JEWELERY</div>
-            <div class="sub-category-text">EAR RING</div>
-        </div>
-
-        <div id="filter-area-filter-area">
-            <form id="filter-area-search-bar">
-                <input type="text" placeholder="Business Name" id="business_name" name="search">
-            </form>
-
-            <form class="filter-area-min-price">
-                <input type="text" placeholder="Min Price" id="min_price" name="search">
-            </form>
-
-            <form class="filter-area-max-price">
-                <input type="text" placeholder="Max Price" id="max_price" name="search">
-            </form> 
-
-            <button id="filter-area-filter-button" onclick="FilterProducts()">Filter</button>
-        </div>
-    </div>
-
     <div class="product-container">
         {% for product in products %}
             <div class="product">
@@ -84,16 +54,12 @@
                     </div>
                     
                     <div class="number-of-ratings">★{{ product.rating }} - ({{ product.number_of_rating }})</div>
-
-                    {% if product.isWished == 0 %}    
-                        <button id="wishlistButton_{{product.product_id}}" class="btn btn-outline-primary btn-sm" onclick="toggleWishlist('{{ product.product_id }}')">
-                            Add to Wishlist
-                        </button>
+                    {% if product.status = 0 %}
+                        <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Return Product</button>
                     {% else %}
-                        <button id="wishlistButton_{{product.product_id}}" class="btn btn-danger wishlist-active btn-sm" onclick="toggleWishlist('{{ product.product_id }}')">
-                            In the Wishlist
-                        </button>
+                        <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Returned</button>
                     {% endif %}
+                    
                 </div>
             </div>
         {% endfor %}
@@ -145,19 +111,9 @@
         });
 
         function loadProducts(page) {
-            data = {'page': page, 'action': isFiltered ? 'isFiltered' : 'base'};
-            
-            if (isFiltered) {
-                data['business_name'] = document.getElementById("business_name").value;
-                data['min_price'] = document.getElementById("min_price").value;
-                data['max_price'] = document.getElementById("max_price").value;
-                console.log(business_name);
-                console.log(min_price);
-                console.log(max_price);
-            }
-
+            data = {'page': page};
             $.ajax({
-                url: '/user/main',
+                url: '/user/transactions',
                 data: data,
                 success: function(data) {
                     $('.product-container').html($(data).find('.product-container').html());
@@ -217,79 +173,6 @@
             const popup = document.getElementById('productPopup');
             popup.innerHTML = '';
             popup.style.display = 'none';
-        }
-
-
-        function generateRatingStars(productId, rating) {
-            let starsHtml = '';
-            for (let i = 5; i >= 1; i--) {
-                if (rating >= i && rating < i + 1) {
-                    starsHtml += `<input type="radio" id="star${i}_${productId}" name="rate_${productId}" value="${i}" checked/>`;
-                } else {
-                    starsHtml += `<input type="radio" id="star${i}_${productId}" name="rate_${productId}" value="${i}"/>`;
-                }
-                starsHtml += `<label for="star${i}_${productId}" title="${i} stars">${i} stars</label>`;
-            }
-            return starsHtml;
-        }
-
-        function addToCart(productId, amount){
-            $.ajax({
-                url: '/user/main',
-                type: 'POST',
-                data: {
-                    'productId': productId,
-                    'amount': amount,
-                    'action': 'addToCart'
-                },
-                success: 
-                    console.log("Success")
-            });
-        }
-
-        function FilterProducts() {
-            min_price = document.getElementById("min_price").value;
-            max_price = document.getElementById("max_price").value;
-            if (parseFloat(max_price) < parseFloat(min_price)) {
-                alert("Minimum Price cannot be higher than Maximum Price");
-            }
-            else
-            {
-                isFiltered = true;
-                loadProducts(1);
-            } 
-        }
-
-        function toggleWishlist(productId) {
-            var button = document.getElementById('wishlistButton_' + productId);
-            var isActive = button.classList.contains('wishlist-active');
-            situation = ""
-
-            if (isActive) {
-                button.textContent = 'Add to Wishlist';
-                button.classList.remove('wishlist-active');
-                button.classList.remove('btn-danger');
-                button.classList.add('btn-outline-primary');
-                situation = "remove"
-            } else {
-                button.textContent = 'In the Wishlist';
-                button.classList.add('wishlist-active');
-                button.classList.remove('btn-outline-primary');
-                button.classList.add('btn-danger');
-                situation = "add"
-            }
-
-            $.ajax({
-                url: '/user/main',
-                type: 'POST',
-                data: {
-                    'productId': productId,
-                    'situation': situation,
-                    'action': 'addToWishlist'
-                },
-                success: 
-                    console.log("Success")
-            });
         }
     </script>
 {% endblock %}
