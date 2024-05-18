@@ -271,7 +271,7 @@ BEGIN
     LIMIT per_page OFFSET start_index;
 END;//
 
-CREATE PROCEDURE ProductFilter(IN per_page INT, IN start_index INT, IN filter_business_name VARCHAR(255), IN filter_min_price DECIMAL(10,2), IN filter_max_price DECIMAL(10,2))
+CREATE PROCEDURE ProductFilter(IN per_page INT, IN start_index INT, IN filter_business_name VARCHAR(255), IN filter_min_price DECIMAL(10,2), IN filter_max_price DECIMAL(10,2), IN sort_method INT)
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 
            ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
@@ -286,7 +286,13 @@ BEGIN
     JOIN Small_Business SB ON AP.small_business_id = SB.user_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
     AND P.price BETWEEN filter_min_price AND filter_max_price
-    ORDER BY P.product_id DESC
+    ORDER BY 
+        CASE 
+            WHEN sort_method = 0 THEN P.product_id END DESC,
+            WHEN sort_method = 1 THEN P.price END DESC,
+            WHEN sort_method = 2 THEN P.price END ASC,
+            WHEN sort_method = 3 THEN P.product_id END DESC,
+            WHEN sort_method = 4 THEN P.product_id END ASC
     LIMIT per_page OFFSET start_index;
 END;//
 
@@ -321,17 +327,17 @@ LEFT JOIN
 -- Insert Users (Customers, Businesses, and Admin)
 INSERT INTO User (user_name, email, password, user_type, address, phone_number, active)
 VALUES 
-('Admin', 'admin@example.com', 'adminpassword', 'Admin', 'Admin Address', '555-0301', 1),
-('Alice', 'alice@example.com', 'password', 'Customer', '123 Main St', '555-0101', 1),
-('Bob', 'bob@example.com', 'password', 'Customer', '456 Elm St', '555-0102', 1),
-('Charlie', 'charlie@example.com', 'password', 'Customer', '789 Maple St', '555-0103', 1),
-('David', 'david@example.com', 'password', 'Customer', '101 Oak St', '555-0104', 1),
-('Eve', 'eve@example.com', 'password', 'Customer', '202 Pine St', '555-0105', 1),
-('Biz1', 'biz1@example.com', 'password', 'Small_Business', '303 Birch St', '555-0201', 1),
-('Biz2', 'biz2@example.com', 'password', 'Small_Business', '404 Cedar St', '555-0202', 1),
-('Biz3', 'biz3@example.com', 'password', 'Small_Business', '505 Dogwood St', '555-0203', 1),
-('Biz4', 'biz4@example.com', 'password', 'Small_Business', '606 Fir St', '555-0204', 1),
-('Biz5', 'biz5@example.com', 'password', 'Small_Business', '707 Elm St', '555-0205', 1);
+('Admin', 'admin@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Admin', 'Admin Address', '555-0301', 1),
+('Alice', 'alice@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '123 Main St', '555-0101', 1),
+('Bob', 'bob@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '456 Elm St', '555-0102', 1),
+('Charlie', 'charlie@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '789 Maple St', '555-0103', 1),
+('David', 'david@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '101 Oak St', '555-0104', 1),
+('Eve', 'eve@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '202 Pine St', '555-0105', 1),
+('Biz1', 'biz1@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '303 Birch St', '555-0201', 1),
+('Biz2', 'biz2@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '404 Cedar St', '555-0202', 1),
+('Biz3', 'biz3@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '505 Dogwood St', '555-0203', 1),
+('Biz4', 'biz4@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '606 Fir St', '555-0204', 1),
+('Biz5', 'biz5@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '707 Elm St', '555-0205', 1);
 
 -- Insert Customers
 INSERT INTO Customer (user_id, picture, payment_info, balance)
