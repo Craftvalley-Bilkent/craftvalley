@@ -28,7 +28,7 @@ def create_product(request):
                 cursor.execute("""
                     INSERT INTO Add_Product (product_id, small_business_id, post_date)
                     VALUES (%s, %s, NOW())
-                """, [product_id, request.user.pk])
+                """, [product_id,  request.session.get("user_id")])
 
                 messages.success(request, 'Product created successfully!')
                 return redirect('list_products')
@@ -44,7 +44,7 @@ def list_products(request):
         cursor.execute("""
             SELECT * FROM Product
             WHERE product_id IN (SELECT product_id FROM Add_Product WHERE small_business_id = %s)
-        """, [request.user.pk])
+        """, [ request.session.get("user_id")])
         products = cursor.fetchall()
 
     return render(request, 'small_business/list_products.html', {'products': products})
