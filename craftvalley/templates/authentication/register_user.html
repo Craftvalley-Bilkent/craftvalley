@@ -23,39 +23,34 @@
     .form-group {
         text-align: center;
     }
-    .register-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .register-buttons a {
-        flex: 1;
-    }
 </style>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="form-container">
-            <h2 class="text-center">Login</h2>
+            <h2 class="text-center">Register</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3 form-group">
                     <label for="username" class="form-label" style="display: none;">User Name</label>
-                    <input type="text" class="form-control custom-input" id="username" name="username" placeholder="Email" required>
+                    <input type="text" class="form-control custom-input" id="username" name="username" placeholder="User Name" required>
+                </div>
+                <div class="mb-3 form-group">
+                    <label for="email" class="form-label" style="display: none;">E-Mail</label>
+                    <input type="email" class="form-control custom-input" id="email" name="email" placeholder="E-Mail" required>
                 </div>
                 <div class="mb-3 form-group">
                     <label for="password" class="form-label" style="display: none;">Password</label>
                     <input type="password" class="form-control custom-input" id="password" name="password" placeholder="Password" required>
                 </div>
+                <div class="mb-3 form-group">
+                    <label for="phone_number" class="form-label" style="display: none;">Phone Number</label>
+                    <input type="text" class="form-control custom-input" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+                </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-custom w-100">Login</button>
+                    <button type="submit" class="btn btn-custom w-100">Register</button>
                 </div>
             </form>
-            <div class="register-buttons">
-                <a href="{% url 'register_user' %}" class="btn btn-primary">Register as Customer</a>
-                <a href="{% url 'register_business' %}" class="btn btn-secondary">Register as Small Business</a>
-            </div>
         </div>
     </div>
 </div>

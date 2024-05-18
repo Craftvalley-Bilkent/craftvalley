@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="text-center">Business Profile</h2>
+            <p>Welcome, {{ request.session.user_name }}</p>
+            <div class="mb-3">
+                <label for="business_name" class="form-label">Business Name</label>
+                <input type="text" class="form-control" id="business_name" name="business_name" value="{{ business.0 }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ business.1 }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" readonly>{{ business.2 }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import render
 
 import user.urls
 
@@ -23,5 +24,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("login/", include(user.urls.urlpatterns)),
     path('auth/', include('authentication.urls')),   
-    path("user/", include(user.urls.urlpatterns)),   
+    path("user/", include(user.urls.urlpatterns)),
+    path('', lambda request: render(request, 'base.html'), name='home'),
 ]
