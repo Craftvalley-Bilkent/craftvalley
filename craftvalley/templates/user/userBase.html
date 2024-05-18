@@ -12,12 +12,14 @@
 <body id="base-body" style="background-color: #FFF7F1; z-index: 100; position: sticky !important;">
     <ul id="top-bar-category-list" style="display: none;">
         {% for category in categories %}
-            <li class="category_item" id="category_{{category.category_name}}" onmouseenter="showSubCategory('{{category.category_name}}')">{{category.category_name}}</li>
-            <ul class="top-bar-subcategory-list" id="sub_{{category.category_name}}" style="display: none;">
-                {% for subcategory in category.sub_categories %}
-                    <li class="subcategory_item">{{ subcategory.sub_category_name }}</li>
-                {% endfor %}
-            </ul>
+            <div class="category_item_div" id="category_div_{{category.category_name}}" onmouseleave="hideSubCategory('{{category.category_name}}')" style="position: relative;">
+                <li class="category_item" id="category_{{category.category_name}}" onmouseenter="showSubCategory('{{category.category_name}}')">{{category.category_name}}</li>
+                <ul class="top-bar-subcategory-list" id="sub_{{category.category_name}}" style="display: none;">
+                    {% for subcategory in category.sub_categories %}
+                        <li class="subcategory_item">{{ subcategory.sub_category_name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endfor %}
     </ul>
         
@@ -35,7 +37,12 @@
 
         function showSubCategory(categoryName) {
             const subcats = document.getElementById('sub_' + categoryName);
-            subcats.style.display = subcats.style.display === 'none' ? 'block' : 'none';
+            subcats.style.display = 'block';
+        }
+
+        function hideSubCategory(categoryName) {
+            const subcats = document.getElementById('sub_' + categoryName);
+            subcats.style.display = 'none';
         }
         
     </script>
