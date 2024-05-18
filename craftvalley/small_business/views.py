@@ -15,12 +15,12 @@ def create_product(request):
         description = request.POST['description']
         price = request.POST['price']
         amount = request.POST['amount']
-
+        
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO Product (title, description, price, amount, rating, number_of_rating)
-                    VALUES (%s, %s, %s, %s, 0, 0)
+                    INSERT INTO Product (title, description, price, amount)
+                    VALUES (%s, %s, %s, %s)
                 """, [title, description, price, amount])
 
                 product_id = cursor.lastrowid
@@ -34,7 +34,7 @@ def create_product(request):
                 return redirect('list_products')
         except Exception as e:
             messages.error(request, f'Error: {e}')
-            print(f'Error: {e}')  # Hata mesajlarını loglayın
+            print(f'Error: {e}') 
 
     return render(request, 'small_business/create_product.html')
 

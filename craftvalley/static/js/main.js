@@ -1,22 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('create-product-form');
+    const forms = document.querySelectorAll('form');
 
-    form.addEventListener('submit', function(event) {
-        let valid = true;
-        const fields = ['title', 'recipient', 'materials', 'category', 'description', 'price', 'amount', 'image'];
-        const messages = [];
-
-        fields.forEach(function(field) {
-            const input = document.getElementById(field);
-            if (!input.value) {
-                valid = false;
-                messages.push(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
-            }
-        });
-
-        if (!valid) {
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
             event.preventDefault();
-            alert(messages.join('\n'));
-        }
+            const formData = new FormData(this);
+            const action = this.action;
+
+            fetch(action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
     });
 });
