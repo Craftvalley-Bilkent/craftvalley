@@ -142,3 +142,27 @@ def small_business_profile(request):
         business = cursor.fetchone()
     
     return render(request, 'authentication/small_business_profile.html', {'business': business})
+
+def edit_business_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    if request.method == 'POST':
+        business_name = request.POST['business_name']
+        title = request.POST['title']
+        description = request.POST['description']
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE Small_Business SET business_name = %s, title = %s, description = %s WHERE user_id = %s",
+                [business_name, title, description, user_id]
+            )
+        messages.success(request, "Profile updated successfully.")
+        return redirect('small_business_profile')
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT business_name, title, description FROM Small_Business WHERE user_id = %s", [user_id])
+        business = cursor.fetchone()
+    
+    return render(request, 'authentication/edit_business_profile.html', {'business': business})

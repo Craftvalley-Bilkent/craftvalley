@@ -191,7 +191,7 @@
                         </div>
                         <div class="number-of-ratings">★${rating} - (${number_of_rating})</div>
                         <label for="quantity_${productId}">Quantity:</label>
-                        <input type="number" id="quantity_${productId}" name="quantity_${productId}" min="1" max="${amount}" value="1" oninput="limitQuantity(this)" onkeydown="return false">
+                        <input type="number" id="quantity_${productId}" name="quantity_${productId}" min="1" max="${amount}" value="1" onkeydown="return false">
                         <button type="button" class="btn btn-primary btn-sm" onclick="addToCart(${productId}, document.getElementById('quantity_${productId}').value)">Add to Cart</button>
                     </div>
                 `;
