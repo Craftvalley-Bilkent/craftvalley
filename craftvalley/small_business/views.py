@@ -3,34 +3,7 @@ from django.db import connection
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-
-def register_as_business(request):
-    if request.method == 'POST':
-        user_name = request.POST['user_name']
-        email = request.POST['email']
-        password = make_password(request.POST['password'])
-        business_name = request.POST['business_name']
-        phone_number = request.POST['phone_number']
-
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    INSERT INTO User (user_name, email, password, user_type, phone_number, active)
-                    VALUES (%s, %s, %s, 'business', %s, 1)
-                """, [user_name, email, password, phone_number])
-
-                cursor.execute("""
-                    INSERT INTO Small_Business (user_id, business_name, title, balance)
-                    VALUES (LAST_INSERT_ID(), %s, %s, 0)
-                """, [business_name, business_name])
-
-                messages.success(request, 'Business registered successfully!')
-                return redirect('login')
-        except Exception as e:
-            messages.error(request, f'Error: {e}')
-
-    return render(request, 'small_business/register_as_business.html')
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 #@login_required
 def create_product(request):
