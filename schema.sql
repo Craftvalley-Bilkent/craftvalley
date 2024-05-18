@@ -286,7 +286,13 @@ BEGIN
     JOIN Small_Business SB ON AP.small_business_id = SB.user_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
     AND P.price BETWEEN filter_min_price AND filter_max_price
-    ORDER BY P.product_id DESC
+    ORDER BY 
+        CASE 
+            WHEN sort_method = 0 THEN P.product_id END DESC,
+            WHEN sort_method = 1 THEN P.price END DESC,
+            WHEN sort_method = 2 THEN P.price END ASC,
+            WHEN sort_method = 3 THEN P.product_id END DESC,
+            WHEN sort_method = 4 THEN P.product_id END ASC
     LIMIT per_page OFFSET start_index;
 END;//
 

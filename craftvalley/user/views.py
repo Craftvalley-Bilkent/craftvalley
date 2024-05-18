@@ -89,7 +89,10 @@ def showProducts(request):
 
     with connection.cursor() as cursor:
         if (action == 'isFiltered'):
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99)))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0))
+        elif (action == 'isSorted'):
+            sortMethod = request.GET.get('sortMethod')
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod)))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index))
         
