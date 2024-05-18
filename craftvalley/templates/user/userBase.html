@@ -11,14 +11,16 @@
 </head>
 <body id="base-body" style="background-color: #FFF7F1; z-index: 100; position: sticky !important;">
     <ul id="top-bar-category-list" style="display: none;">
-        <li>Category 1</li>
-        <li>Category 2</li>
-        <li>Category 3</li>
-        <li>Category 4</li>
-        <li>Category 5</li>
-        <li>Category 6</li>
-        <li>Category 7</li>
-        <li>Category 8</li>
+        {% for category in categories %}
+            <li class="category_item" id="category_{{category.category_name}}" onmouseenter="showSubCategory('{{category.category_name}}')">{{category.category_name}}</li>
+            <ul class="top-bar-subcategory-list" id="sub_{{category.category_name}}" style="display: none;">
+                {% for subcategory in category.sub_categories %}
+                    <li class="subcategory_item">{{ subcategory.sub_category_name }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+        
     </ul>
     <script>
         document.addEventListener('click', function(event) {
@@ -30,6 +32,12 @@
                 list.style.display = 'none';
             }
         });
+
+        function showSubCategory(categoryName) {
+            const subcats = document.getElementById('sub_' + categoryName);
+            subcats.style.display = subcats.style.display === 'none' ? 'block' : 'none';
+        }
+        
     </script>
     <div class="top-bar">
         <a class="top-bar-button" href="/user/main" style="grid-column: 1 / span 3;">
@@ -47,7 +55,7 @@
             </button>
         </form>
 
-        <a class="top-bar-button" style="grid-column: 17;">
+        <a class="top-bar-button" href="/user/transactions" style="grid-column: 17;">
             <img src="{% static 'SignIn.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
         </a>
 
