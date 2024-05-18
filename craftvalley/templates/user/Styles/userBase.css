@@ -101,3 +101,28 @@
     height: 2.5vh;
     width: 2.5vh;
 }
+
+.category-item {
+    position: relative;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.top-bar-subcategory-list {
+    list-style-type: none;
+    position: absolute;
+    left: 100%; /* Align the subcategory list to the right of the category list */
+    top: 0;
+    background-color: white;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #ccc;
+    width: 200px; /* Adjust width as needed */
+}
+
+.top-bar-subcategory-list li {
+    padding: 5px 10px;
+}
+
+.top-bar-subcategory-list li:hover {
+    background-color: #f0f0f0;
+}

@@ -291,3 +291,29 @@ BEGIN
 END;//
 
 DELIMITER ;
+
+CREATE VIEW UserTransactions AS
+SELECT 
+    T.product_id,
+    P.title AS product_title,
+    P.images AS product_image,
+    P.description AS product_description,
+    P.price AS product_price,
+    T.small_business_id,
+    SB.business_name,
+    T.transaction_date,
+    T.count,
+    T.transaction_status,
+    R.star AS user_rating
+FROM 
+    Transaction T
+JOIN 
+    Product P ON T.product_id = P.product_id
+JOIN 
+    Customer C ON T.customer_id = C.user_id
+JOIN 
+    User U ON C.user_id = U.user_id
+JOIN 
+    Small_Business SB ON T.small_business_id = SB.user_id
+LEFT JOIN 
+    Rate R ON T.customer_id = R.customer_id AND T.product_id = R.product_id;
