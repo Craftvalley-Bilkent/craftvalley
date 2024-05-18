@@ -1,0 +1,25 @@
+{% extends 'user/userBase.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'shoppingCart.css' %}">
+{% endblock %}
+
+{% block content %}  
+    <div id="cart-body">
+        <div id="balance">
+            <div id="balance-text">BALANCE: </div>
+            <button type="submit" id="add-balance">ADD BALANCE</button>
+        </div>
+        <div id="product-list">
+        </div>
+        <div id="purchase-area">
+            <div id="total-cost-text">TOTAL PRICE:</div>
+            <button type="submit" id="purchase-button">PURCHASE</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    
+{% endblock %}
