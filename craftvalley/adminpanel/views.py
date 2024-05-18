@@ -23,9 +23,12 @@ def admin_only(view_func):
 # @admin_only
 def admin_dashboard(request):
     reported_businesses = raw_sql_query("""
-        SELECT B.user_id, B.business_name, C.user_id, H.report_description, H.report_date
-        FROM Small_Business as B, Customer as C, Has_Reported as H
-        WHERE B.user_id = H.small_business_id AND C.user_id = H.customer_id
+        SELECT B.user_id, B.business_name, C.user_id, H.report_description, H.report_date, 
+               IFNULL(Ban.ban_date, 'ALLOWED') AS status
+        FROM Small_Business as B
+        JOIN Has_Reported as H ON B.user_id = H.small_business_id
+        JOIN Customer as C ON C.user_id = H.customer_id
+        LEFT JOIN Ban ON B.user_id = Ban.small_business_id
     """)
 
     popular_products = raw_sql_query("""
@@ -107,7 +110,7 @@ def admin_dashboard(request):
 # @login_required
 # @admin_only
 def ban_business(request, business_id):
-    admin_id = request.user.id  # Assuming the logged-in user is an admin
+    admin_id = 11  # Assuming the logged-in user is an admin
     ban_duration = "Indefinite"
     raw_sql_query("""
         INSERT INTO Ban (admin_id, small_business_id, ban_duration, ban_date)
@@ -127,3 +130,13 @@ def ban_details(request, business_id):
         return JsonResponse({'business_id': ban_details[0][0], 'business_name': ban_details[0][1], 'ban_duration': ban_details[0][2], 'ban_date': ban_details[0][3]})
     else:
         return JsonResponse({'error': 'No ban details found.'})
+
+# @login_required
+# @admin_only
+def unban_business(request, business_id):
+    raw_sql_query("""
+        DELETE FROM Ban
+        WHERE small_business_id = %s
+    """, [business_id])
+    return redirect('admin_dashboard')
+
