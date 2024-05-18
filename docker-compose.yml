@@ -12,10 +12,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     command: ["python", "manage.py", "runserver", "0.0.0.0:3000"]
 
+  migrate:
+    build: .
+    image: craftvalley
+    volumes:
+      - ./craftvalley:/craftvalley
+    working_dir: /craftvalley
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "manage.py", "migrate"]
+
   db:
-    image: mysql:8.0
+    platform: linux/arm64/v8
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -26,7 +39,6 @@ services:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
+      timeout: 60s
       retries: 5
-      start_period: 10s
-      timeout: 10s
+      interval: 10s

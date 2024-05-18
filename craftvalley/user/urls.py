@@ -4,7 +4,7 @@ import user.views
 
 urlpatterns = [
     path("", user.views.login),
+    path("main", user.views.showProducts, name="user_main"),
     path("cart", user.views.showCart),
-    path("main", user.views.showProducts),
     path("transactions", user.views.showTransactions),
 ]
