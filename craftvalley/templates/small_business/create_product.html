@@ -4,31 +4,89 @@
 {% block title %}Create Product{% endblock %}
 
 {% block content %}
-<form id="productForm" method="post" action="{% url 'create_product' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="title">Product Title:</label>
-    <input type="text" id="title" name="title" required>
-    <label for="recipient">Recipient:</label>
-    <input type="text" id="recipient" name="recipient" required>
-    <label for="materials">Materials:</label>
-    <input type="text" id="materials" name="materials" required>
-    <label for="category">Category:</label>
-    <input type="text" id="category" name="category" required>
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required></textarea>
-    <label for="price">Price:</label>
-    <input type="text" id="price" name="price" required>
-    <label for="amount">Amount:</label>
-    <input type="number" id="amount" name="amount" required>
-    <label for="image">Product Image:</label>
-    <input type="file" id="image" name="image" accept="image/*" required>
-    <button type="submit">Create Product</button>
-</form>
+<style>
+    .custom-card-header {
+        background-color: #cfa0a0; 
+        color: white;
+        font-family: 'Georgia', serif;
+    }
+
+    .custom-form-label {
+        font-family: 'Georgia', serif;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-form-control {
+        font-family: 'Georgia', serif;
+    }
+
+    .custom-btn {
+        background-color: #cfa0a0;
+        border: none;
+        color: white;
+        font-family: 'Georgia', serif;
+    }
+
+    .custom-btn:hover {
+        background-color: #b68989;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header custom-card-header">
+                    <h4 class="mb-0">Create Product</h4>
+                </div>
+                <div class="card-body">
+                    <form id="productForm" method="post" action="{% url 'create_product' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="title" class="custom-form-label">Product Title:</label>
+                            <input type="text" class="form-control custom-form-control" id="title" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient" class="custom-form-label">Recipient:</label>
+                            <input type="text" class="form-control custom-form-control" id="recipient" name="recipient" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="materials" class="custom-form-label">Materials:</label>
+                            <input type="text" class="form-control custom-form-control" id="materials" name="materials" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category" class="custom-form-label">Category:</label>
+                            <input type="text" class="form-control custom-form-control" id="category" name="category" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="custom-form-label">Description:</label>
+                            <textarea class="form-control custom-form-control" id="description" name="description" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price" class="custom-form-label">Price:</label>
+                            <input type="text" class="form-control custom-form-control" id="price" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount" class="custom-form-label">Amount:</label>
+                            <input type="number" class="form-control custom-form-control" id="amount" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="image" class="custom-form-label">Product Image:</label>
+                            <input type="file" class="form-control-file custom-form-control" id="image" name="image" accept="image/*" required>
+                        </div>
+                        <button type="submit" class="btn custom-btn btn-block">Create Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        function addProduct(){
+<script>
+    function addProduct() {
         var formData = new FormData(document.getElementById('productForm'));
 
         $.ajax({
@@ -45,5 +103,5 @@
             }
         });
     }
-    </script>
+</script>
 {% endblock %}

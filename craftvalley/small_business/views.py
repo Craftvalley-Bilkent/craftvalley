@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadedfile import InMemoryUploadedFile
+import base64
 
 #@login_required
 def create_product(request):
@@ -43,14 +44,21 @@ def create_product(request):
 
 #@login_required
 def list_products(request):
+    user_id = request.user.id  
+    per_page = 10 
+    start_index = 0 
+    
     with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT * FROM Product
-            WHERE product_id IN (SELECT product_id FROM Add_Product WHERE small_business_id = %s)
-        """, [ request.session.get("user_id")])
-        products = cursor.fetchall()
+        cursor.callproc('ProductPrinter', [per_page, start_index])
+        rows = cursor.fetchall()
+    
+    products = []
+    for row in rows:
+        new_row = row[:7] + (base64.b64encode(row[7]).decode() if row[7] else None, ) + row[8:]
+        products.append(new_row)
 
     return render(request, 'small_business/list_products.html', {'products': products})
+
 
 #@login_required
 def edit_product(request, product_id):
@@ -59,14 +67,23 @@ def edit_product(request, product_id):
         description = request.POST['description']
         price = request.POST['price']
         amount = request.POST['amount']
+        images = request.FILES.get('images')
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute("""
-                    UPDATE Product
-                    SET title = %s, description = %s, price = %s, amount = %s
-                    WHERE product_id = %s
-                """, [title, description, price, amount, product_id])
+                if images:
+                    images_data = images.read()
+                    cursor.execute("""
+                        UPDATE Product
+                        SET title = %s, description = %s, price = %s, amount = %s, images = %s
+                        WHERE product_id = %s
+                    """, [title, description, price, amount, images_data, product_id])
+                else:
+                    cursor.execute("""
+                        UPDATE Product
+                        SET title = %s, description = %s, price = %s, amount = %s
+                        WHERE product_id = %s
+                    """, [title, description, price, amount, product_id])
 
                 messages.success(request, 'Product updated successfully!')
                 return redirect('list_products')
@@ -105,3 +122,22 @@ def view_balance_history(request):
         balance_history = cursor.fetchall()
 
     return render(request, 'small_business/balance_history.html', {'balance_history': balance_history})
+
+#@login_required
+def update_product_amount(request, product_id):
+    if request.method == 'POST':
+        amount = request.POST['amount']
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE Product
+                    SET amount = %s
+                    WHERE product_id = %s
+                """, [amount, product_id])
+
+                messages.success(request, 'Product amount updated successfully!')
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+
+    return redirect('list_products')
