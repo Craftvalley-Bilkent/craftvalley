@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib import messages
 import hashlib
+import re
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -176,6 +177,45 @@ def edit_business_profile(request):
         business = cursor.fetchone()
     
     return render(request, 'authentication/edit_business_profile.html', {'business': business})
+
+def user_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+    
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT user_name, email, phone_number FROM User WHERE user_id = %s", [user_id])
+        user = cursor.fetchone()
+    
+    return render(request, 'authentication/user_profile.html', {'user': user})
+
+def edit_user_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        phone_number = request.POST['phone_number']
+
+        if not is_valid_phone_number(phone_number):
+            messages.error(request, "Phone number must consist only of numbers with an optional + at the start.")
+            return redirect('edit_user_profile')
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE User SET user_name = %s, email = %s, phone_number = %s WHERE user_id = %s",
+                [username, email, phone_number, user_id]
+            )
+        messages.success(request, "Profile updated successfully.")
+        return redirect('user_profile')
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT user_name, email, phone_number FROM User WHERE user_id = %s", [user_id])
+        user = cursor.fetchone()
+    
+    return render(request, 'authentication/edit_user_profile.html', {'user': user})
 
 def logout_view(request):
     # Clear session data
