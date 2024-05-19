@@ -177,13 +177,14 @@ CREATE TABLE IF NOT EXISTS Customer_Has_Record (
 );
 
 CREATE TABLE IF NOT EXISTS Transaction (
+    transaction_id INT NOT NULL AUTO_INCREMENT,
     product_id INT NOT NULL,
     customer_id INT NOT NULL,
     small_business_id INT NOT NULL,
     transaction_date DATE NOT NULL,
     count INT NOT NULL,
     transaction_status VARCHAR(255) NOT NULL,
-    PRIMARY KEY (product_id, small_business_id),
+    PRIMARY KEY (transaction_id),
     FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE,
     FOREIGN KEY (small_business_id) REFERENCES Small_Business(user_id) ON DELETE CASCADE,
     FOREIGN KEY (customer_id) REFERENCES Customer(user_id) ON DELETE CASCADE
@@ -304,7 +305,8 @@ SELECT
     T.count,
     T.transaction_status,
     R.star AS user_rating,
-    U.user_id AS customer_id
+    U.user_id AS customer_id,
+    T.transaction_id AS transaction_id
 FROM 
     Transaction T
 JOIN 
