@@ -233,3 +233,142 @@ def showTransactions(request):
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
     return render(request, "user/transactions.html", {'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
+
+@customer_only
+def showCategoryProducts(request, category, subcategory):
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'postRating':
+            productId = request.POST.get('product_id')
+            ratingValue = request.POST.get('rating')
+            userId = 3
+            with connection.cursor() as cursor:
+                product_data = [(userId, productId, ratingValue)]
+                sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
+                for data in product_data:
+                    cursor.execute(sql_query, data)
+
+        elif action == 'addToCart':
+            productId = request.POST.get('productId')
+            amount = request.POST.get('amount')
+            userId = 3
+            with connection.cursor() as cursor:
+                cursor.callproc('CartAdder', (userId, productId, amount))
+                
+            connection.commit()
+        elif action == 'addToWishlist':
+            productId = request.POST.get('productId')
+            situation = request.POST.get('situation')
+            userId = 3
+            with connection.cursor() as cursor:
+                if situation == "remove":
+                    cursor.execute("DELETE FROM Wish WHERE product_id = %s AND customer_id = %s", [productId, userId])
+                else:
+                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(%s, %s)", [userId, productId])
+
+    # Base query
+    temp_query = """SELECT COUNT(*) AS numOfProducts 
+                    FROM Product 
+                    JOIN Sub_Category ON Product.sub_category_id = Sub_Category.sub_category_id 
+                    JOIN Main_Category ON Sub_Category.main_category_id = Main_Category.main_category_id 
+                    WHERE Main_Category.main_category_name = %s 
+                    AND Sub_Category.sub_category_name = %s"""
+    query_params = [category, subcategory]
+
+    action = ""
+    business_name = ""
+    min_price = ""
+    max_price = ""
+
+    if request.method == 'GET':
+        action = request.GET.get('action')
+
+        if action == 'isFiltered':
+            business_name = request.GET.get('business_name')
+            min_price = request.GET.get('min_price')
+            max_price = request.GET.get('max_price')
+
+            temp_query = """SELECT COUNT(*) AS numOfProducts 
+                            FROM Product 
+                            JOIN Add_Product ON Product.product_id = Add_Product.product_id
+                            JOIN Small_Business ON Add_Product.small_business_id = Small_Business.user_id
+                            JOIN Sub_Category ON Product.sub_category_id = Sub_Category.sub_category_id 
+                            JOIN Main_Category ON Sub_Category.main_category_id = Main_Category.main_category_id 
+                            WHERE Main_Category.main_category_name = %s 
+                            AND Sub_Category.sub_category_name = %s"""
+            query_params = [category, subcategory]
+
+            if business_name:
+                temp_query += " AND Small_Business.business_name LIKE %s"
+                query_params.append(f'%{business_name}%')
+            if min_price:
+                temp_query += " AND Product.price >= %s"
+                query_params.append(min_price)
+            if max_price:
+                temp_query += " AND Product.price <= %s"
+                query_params.append(max_price)
+
+    with connection.cursor() as cursor:
+        cursor.execute(temp_query, query_params)
+        row = cursor.fetchone()
+
+    total_products = row[0]
+
+    per_page = 16
+    total_pages = (total_products + per_page - 1) // per_page 
+    current_page = int(request.GET.get('page', 1))
+    start_index = max(0, (current_page - 1) * per_page)
+
+    with connection.cursor() as cursor:
+        if action == 'isFiltered':
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, category, subcategory))
+        elif action == 'isSorted':
+            sortMethod = request.GET.get('sortMethod')
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), category, subcategory))
+        else:
+            cursor.callproc("ProductPrinter", (per_page, start_index, category, subcategory))
+        
+        rows = cursor.fetchall()
+
+    all_products = []
+    for row in rows:
+        product = {
+            'product_id': row[0],
+            'title': row[1],
+            'description': row[2],
+            'price': row[3],
+            'amount': row[4],
+            'rating': row[5],
+            'number_of_rating': row[6],
+            'images': base64.b64encode(row[7]).decode() if row[7] else None,
+            'isWished': 0,
+        }
+        all_products.append(product)
+
+    page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
+
+    all_categories = get_categories()
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 3")
+        rows = cursor.fetchall()
+
+    all_wished_products = []
+    for row in rows:
+        wished_product = {
+            'product_id': row[0],
+        }
+        all_wished_products.append(wished_product)
+    i = 0
+    j = 0
+    while (j < len(all_wished_products)) and (i < len(all_products)):
+        if(all_wished_products[j]['product_id'] == all_products[i]['product_id']):
+            all_products[i]['isWished'] = 1
+            i += 1
+            j += 1
+        else:
+            i += 1
+    
+    return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
