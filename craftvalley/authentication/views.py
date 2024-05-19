@@ -209,10 +209,6 @@ def edit_user_profile(request):
         email = request.POST['email']
         phone_number = request.POST['phone_number']
 
-        if not is_valid_phone_number(phone_number):
-            messages.error(request, "Phone number must consist only of numbers with an optional + at the start.")
-            return redirect('edit_user_profile')
-
         with connection.cursor() as cursor:
             cursor.execute(
                 "UPDATE User SET user_name = %s, email = %s, phone_number = %s WHERE user_id = %s",
