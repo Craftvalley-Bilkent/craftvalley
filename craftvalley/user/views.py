@@ -110,7 +110,7 @@ def showProducts(request):
             """
 
             if(business_name != ""):
-                temp_query = temp_query + " AND Small_Business.business_name LIKE('% " + business_name + " %')  AND 2 = 2"
+                temp_query = temp_query + " AND Small_Business.business_name LIKE('%" + business_name + "%')  AND 2 = 2"
             if(min_price != ""):                  
                 temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
             if(max_price != ""):                  
