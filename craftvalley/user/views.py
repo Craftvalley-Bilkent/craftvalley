@@ -109,11 +109,11 @@ def showProducts(request):
             WHERE 1 = 1
             """
 
-            if(business_name != ""):
+            if(business_name):
                 temp_query = temp_query + " AND Small_Business.business_name LIKE('%" + business_name + "%')  AND 2 = 2"
-            if(min_price != ""):                  
+            if(min_price):                  
                 temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
-            if(max_price != ""):                  
+            if(max_price):                  
                 temp_query = temp_query + " AND Product.price <= " + max_price
 
     with connection.cursor() as cursor:
