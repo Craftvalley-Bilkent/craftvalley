@@ -13,6 +13,47 @@ def login(request):
     }
     return render(request, "user/login.html", context=context)
 
+def get_categories():
+    query = """
+    SELECT 
+        mc.main_category_name, 
+        sc.sub_category_name 
+    FROM 
+        Main_Category mc
+    JOIN 
+        Sub_Category sc ON mc.main_category_id = sc.main_category_id
+    ORDER BY 
+        mc.main_category_name, sc.sub_category_name;
+    """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    all_categories = []
+    current_category = None
+    current_sub_categories = []
+
+    for row in rows:
+        category_name, sub_category_name = row
+        if current_category != category_name:
+            if current_category:
+                all_categories.append({
+                    'category_name': current_category,
+                    'sub_categories': [{'sub_category_name': sub} for sub in current_sub_categories]
+                })
+            current_category = category_name
+            current_sub_categories = []
+        current_sub_categories.append(sub_category_name)
+
+    # Append the last category
+    if current_category:
+        all_categories.append({
+            'category_name': current_category,
+            'sub_categories': [{'sub_category_name': sub} for sub in current_sub_categories]
+        })
+
+    return all_categories
 
 # Add product
 @csrf_exempt
@@ -114,17 +155,7 @@ def showProducts(request):
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
-    sub_category = [{'sub_category_name': 'sub1'},{'sub_category_name': 'sub1'},{'sub_category_name': 'sub1'}]
-    all_categories = [
-        {'category_name': 'category1', 'sub_categories': sub_category},
-        {'category_name': 'category2', 'sub_categories': sub_category},
-        {'category_name': 'category3', 'sub_categories': sub_category},
-        {'category_name': 'category4', 'sub_categories': sub_category},
-        {'category_name': 'category5', 'sub_categories': sub_category},
-        {'category_name': 'category6', 'sub_categories': sub_category},
-        {'category_name': 'category7', 'sub_categories': sub_category},
-        {'category_name': 'category8', 'sub_categories': sub_category}
-    ]
+    all_categories = get_categories()
 
 
     with connection.cursor() as cursor:
