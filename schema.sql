@@ -240,17 +240,26 @@ BEGIN
     END IF;
 END;//
 
-CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT)
+CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT, IN wish_user_id INT)
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 
            ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
-           COALESCE(R.num_rating, 0) AS number_of_rating, P.images
+           COALESCE(R.num_rating, 0) AS number_of_rating, P.images,
+           SB.business_name,
+           IF(W.product_id IS NULL, 0, 1) AS is_in_wishlist
     FROM Product P
     LEFT JOIN (
         SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
         FROM Rate
         GROUP BY product_id
     ) R ON P.product_id = R.product_id
+    LEFT JOIN (
+        SELECT product_id
+        FROM Wish
+        WHERE customer_id = wish_user_id
+    ) W ON P.product_id = W.product_id
+    JOIN Add_Product AP ON P.product_id = AP.product_id
+    JOIN Small_Business SB ON AP.small_business_id = SB.user_id
     ORDER BY P.product_id DESC
     LIMIT per_page OFFSET start_index;
 END;//
@@ -261,12 +270,15 @@ CREATE PROCEDURE ProductFilter(
     IN filter_business_name VARCHAR(255), 
     IN filter_min_price DECIMAL(10,2), 
     IN filter_max_price DECIMAL(10,2), 
-    IN sort_method INT
+    IN sort_method INT,
+    IN wish_user_id INT
 )
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 
            ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
-           COALESCE(R.num_rating, 0) AS number_of_rating, P.images
+           COALESCE(R.num_rating, 0) AS number_of_rating, P.images,
+           SB.business_name,
+           IF(W.product_id IS NULL, 0, 1) AS is_in_wishlist
     FROM Product P
     LEFT JOIN (
         SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
@@ -275,6 +287,11 @@ BEGIN
     ) R ON P.product_id = R.product_id
     JOIN Add_Product AP ON P.product_id = AP.product_id
     JOIN Small_Business SB ON AP.small_business_id = SB.user_id
+    LEFT JOIN (
+        SELECT product_id
+        FROM Wish
+        WHERE customer_id = wish_user_id
+    ) W ON P.product_id = W.product_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
     AND P.price BETWEEN filter_min_price AND filter_max_price
     ORDER BY 
