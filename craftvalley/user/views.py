@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
@@ -185,6 +186,17 @@ def showCart(request):
 
 @customer_only
 def showTransactions(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'returnProduct':
+            productId = request.POST.get('productId')
+            transDate = request.POST.get('transDate')
+            transId = request.POST.get('transId')
+            transDate = date(transDate)
+            userId = 3
+            with connection.cursor() as cursor:
+                cursor.callproc('ReturnProduct', (userId, productId, transDate, transId))
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = 3")
@@ -214,6 +226,7 @@ def showTransactions(request):
             'amount': row[8],
             'status': row[9],
             'rating': row[10],
+            'transactionId': row[12]
         }
         all_products.append(product)
 
