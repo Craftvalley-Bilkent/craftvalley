@@ -3,6 +3,18 @@
 
 {% block styles %}
     <link rel="stylesheet" type="text/css" href="{% static 'mainPageUser.css' %}">
+    <style>
+        .btn-custom {
+            background-color: #E78895;
+            border-color: #E78895;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #d6717f;
+            border-color: #d6717f;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}  
@@ -54,9 +66,9 @@
                     </div>
                     <label for="quantity_{{productId}}">Quantity: {{ product.amount }}</label>
                     {% if product.status == 'Completed' %}
-                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">Return Product</button>
+                        <button class="btn btn-custom btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">Return Product</button>
                     {% else %}
-                        <button class="btn btn-secondary btn-sm ml-2">Returned</button>
+                        <button class="btn btn-custom btn-sm ml-2">Returned</button>
                     {% endif %}
                     
                 </div>
@@ -151,8 +163,8 @@
                         </div>
                             <label for="quantity_${productId}">Quantity: ${amount}</label>
                             ${transStatus === 'Completed' 
-                                ? `<button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct(${productId}, '${transDate}', ${transId}, ${busId})">Return Product</button>` 
-                                : `<button class="btn btn-secondary btn-sm ml-2">Returned</button>`}
+                                ? `<button class="btn btn-custom btn-sm ml-2" onclick="returnProduct(${productId}, '${transDate}', ${transId}, ${busId})">Return Product</button>` 
+                                : `<button class="btn btn-custom btn-sm ml-2">Returned</button>`}
                         </div>
                         `;
                 popup.style.display = 'block'; 
