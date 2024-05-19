@@ -155,7 +155,7 @@ def showCart(request):
 def showTransactions(request):
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Product WHERE user_id = 3")
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = 3")
         row = cursor.fetchone()
     
     total_products = row[0]
@@ -165,7 +165,7 @@ def showTransactions(request):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 3 ORDER BY P.product_id DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
+        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 3 ORDER BY product_price DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
         rows = cursor.fetchall()
 
     all_products = []

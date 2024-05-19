@@ -230,6 +230,7 @@
         }
 
         function addToCart(productId, amount){
+            console.log(amount);
             $.ajax({
                 url: '/user/main',
                 type: 'POST',
