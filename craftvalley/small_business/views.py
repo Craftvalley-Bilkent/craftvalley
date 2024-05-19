@@ -85,14 +85,14 @@ def get_subcategories(request):
 
 #@login_required
 def list_products(request):
-    user_id = request.user.id  
-    per_page = 10 
-    start_index = 0 
-    
+    user_name = request.session.get("user_name")
+    per_page = 99999 
+    start_index = 0
+
     with connection.cursor() as cursor:
-        cursor.callproc('ProductPrinter', [per_page, start_index])
+        cursor.callproc("ProductFilter", (per_page, start_index, user_name,  0.0, 99999999.99, 0))
         rows = cursor.fetchall()
-    
+
     products = []
     for row in rows:
         new_row = row[:7] + (base64.b64encode(row[7]).decode() if row[7] else None, ) + row[8:]
