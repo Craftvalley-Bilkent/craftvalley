@@ -6,6 +6,9 @@ import hashlib
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+def is_valid_phone_number(phone_number):
+    return re.match(r'^\+?\d+$', phone_number)
+
 def register_user(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -17,6 +20,10 @@ def register_user(request):
             messages.error(request, "Password must be at least 6 characters long.")
             return redirect('register_user')
         
+        if not is_valid_phone_number(phone_number):
+            messages.error(request, "Phone number must consist only of numbers with an optional + at the start.")
+            return redirect('register_user')
+
         hashed_password = hash_password(password)
         
         with connection.cursor() as cursor:
@@ -69,6 +76,10 @@ def register_business(request):
             messages.error(request, "Password must be at least 6 characters long.")
             return redirect('register_business')
         
+        if not is_valid_phone_number(phone_number):
+            messages.error(request, "Phone number must consist only of numbers with an optional + at the start.")
+            return redirect('register_user')
+
         hashed_password = hash_password(password)
         
         with connection.cursor() as cursor:
