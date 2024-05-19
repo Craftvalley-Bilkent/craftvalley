@@ -1,4 +1,4 @@
-{% extends 'small_business/userBase.html' %}
+{% extends 'small_business/base.html' %}
 {% load static %}
 
 {% block title %}Create Product{% endblock %}
@@ -6,7 +6,7 @@
 {% block content %}
 <style>
     .custom-card-header {
-        background-color: #cfa0a0; 
+        background-color: #E78895; 
         color: white;
         font-family: 'Georgia', serif;
     }
@@ -22,14 +22,14 @@
     }
 
     .custom-btn {
-        background-color: #cfa0a0;
+        background-color: #E78895;
         border: none;
         color: white;
         font-family: 'Georgia', serif;
     }
 
     .custom-btn:hover {
-        background-color: #b68989;
+        background-color: #E78895;
     }
 </style>
 
@@ -50,6 +50,7 @@
                         <div class="form-group">
                             <label for="recipient" class="custom-form-label">Recipient:</label>
                             <select class="form-control custom-form-control" id="recipient" name="recipient" required>
+                                <option value="">Select Recipient</option>
                                 {% for recipient in recipients %}
                                     <option value="{{ recipient.0 }}">{{ recipient.1 }}</option>
                                 {% endfor %}
@@ -57,18 +58,26 @@
                         </div>
                         <div class="form-group">
                             <label for="materials" class="custom-form-label">Materials:</label>
-                            <select class="form-control custom-form-control" id="material" name="material" required>
+                            <select class="form-control custom-form-control" id="materials" name="materials" required>
+                                <option value="">Select Material</option>
                                 {% for material in materials %}
                                     <option value="{{ material.0 }}">{{ material.1 }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="category" class="custom-form-label">Subcategory:</label>
-                            <select class="form-control custom-form-control" id="sub_category" name="sub_category" required>
-                                {% for sub_category in sub_categories %}
-                                    <option value="{{ sub_category.0 }}">{{ sub_category.1 }}</option>
+                            <label for="category" class="custom-form-label">Category:</label>
+                            <select class="form-control custom-form-control" id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.0 }}">{{ category.1 }}</option>
                                 {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subcategory" class="custom-form-label">Subcategory:</label>
+                            <select class="form-control custom-form-control" id="subcategory" name="subcategory" required>
+                                <option value="">Select Subcategory</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -94,4 +103,35 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#category').change(function() {
+            var categoryId = $(this).val();
+            if (categoryId) {
+                $.ajax({
+                    url: '{% url "get_subcategories" %}',
+                    type: 'GET',
+                    data: {
+                        category_id: categoryId
+                    },
+                    success: function(data) {
+                        var subcategorySelect = $('#subcategory');
+                        subcategorySelect.empty();
+                        subcategorySelect.append('<option value="">Select Subcategory</option>');
+                        data.subcategories.forEach(function(subcategory) {
+                            subcategorySelect.append(new Option(subcategory.sub_category_name, subcategory.sub_category_id));
+                        });
+                    }
+                });
+            } else {
+                $('#subcategory').empty();
+                $('#subcategory').append('<option value="">Select Subcategory</option>');
+            }
+        });
+    });
+</script>
 {% endblock %}

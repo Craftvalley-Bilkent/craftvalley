@@ -10,27 +10,6 @@
     {% endblock %}
 </head>
 <body id="base-body" style="background-color: #FFF7F1; z-index: 100; position: sticky !important;">
-    <ul id="top-bar-category-list" style="display: none;">
-        <li>Category 1</li>
-        <li>Category 2</li>
-        <li>Category 3</li>
-        <li>Category 4</li>
-        <li>Category 5</li>
-        <li>Category 6</li>
-        <li>Category 7</li>
-        <li>Category 8</li>
-    </ul>
-    <script>
-        document.addEventListener('click', function(event) {
-            var button = document.getElementById('top-bar-category-button');
-            var list = document.getElementById('top-bar-category-list');
-            if (button.contains(event.target)) {
-                list.style.display = list.style.display === 'none' ? 'block' : 'none';
-            } else if (!list.contains(event.target)) {
-                list.style.display = 'none';
-            }
-        });
-    </script>
     <div class="top-bar">
         <a class="top-bar-button" href="/user/main" style="grid-column: 1 / span 3;">
             <img src="{% static 'Banner.svg' %}" alt="Search Icon" style="height: 100%; width: 100;">
