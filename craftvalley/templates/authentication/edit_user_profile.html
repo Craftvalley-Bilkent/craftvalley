@@ -1,25 +1,75 @@
 {% extends 'user/userBase.html' %}
 
 {% block content %}
+<style>
+    .form-container {
+        padding-top: 50px;
+    }
+
+    .profile-info {
+        font-family: 'Georgia', serif;
+        color: #333;
+        max-width: 80%;
+        margin: 0 auto;
+    }
+
+    .profile-info label {
+        font-weight: bold;
+        color: #000;
+        font-size: 1.1em; 
+    }
+
+    .profile-info p {
+        color: #000; 
+        font-family: 'Georgia', serif; 
+        font-size: 1em;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .header-spacing {
+        margin-bottom: 30px; 
+    }
+
+    .btn-custom {
+        background-color: #E78895;
+        border-color: #E78895;
+        color: white;
+    }
+
+    .btn-custom:hover {
+        background-color: #d6717f;
+        border-color: #d6717f;
+    }
+</style>
+
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="form-container">
-            <h2 class="text-center">Edit User Profile</h2>
+            <h2 class="text-center header-spacing" style="font-family: 'Georgia', serif; color: #333; font-size: 1.5em;">Edit User Profile</h2>
             <form method="post">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label for="username" class="form-label">User Name</label>
-                    <input type="text" class="form-control" id="username" name="username" value="{{ user.0 }}" required>
+                <div class="profile-info">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">User Name</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ user.0 }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-Mail</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.1 }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ user.2 }}" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-custom w-100">Update Profile</button>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">E-Mail</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ user.1 }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="phone_number" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ user.2 }}" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Update Profile</button>
             </form>
         </div>
     </div>
