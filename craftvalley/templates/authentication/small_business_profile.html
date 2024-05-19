@@ -1,25 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .form-container {
+        padding-top: 50px;
+    }
+
+    .custom-input {
+        background-color: white; 
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: #333;
+    }
+
+    .custom-textarea {
+        background-color: white; 
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: #333;
+    }
+
+    .custom-input::placeholder, .custom-textarea::placeholder {
+        color: #000; 
+    }
+
+    .form-label {
+        font-family: 'Georgia', serif;
+        color: #000; 
+    }
+
+    .btn-custom {
+        background-color: #E78895;
+        border-color: #E78895;
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: white;
+    }
+
+    .btn-custom:hover {
+        background-color: darken(#E78895, 10%);
+        border-color: darken(#E78895, 10%);
+    }
+
+    .form-group {
+        text-align: center;
+    }
+</style>
+
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="form-container">
-            <h2 class="text-center">Business Profile</h2>
+            <h2 class="text-center" style="font-family: 'Georgia', serif; color: #333;">Business Profile</h2>
             <p>Welcome, {{ request.session.user_name }}</p>
             <div class="mb-3">
                 <label for="business_name" class="form-label">Business Name</label>
-                <input type="text" class="form-control" id="business_name" name="business_name" value="{{ business.0 }}" readonly>
+                <input type="text" class="form-control custom-input" id="business_name" name="business_name" value="{{ business.0 }}" readonly>
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
-                <input type="text" class="form-control" id="title" name="title" value="{{ business.1 }}" readonly>
+                <input type="text" class="form-control custom-input" id="title" name="title" value="{{ business.1 }}" readonly>
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" readonly>{{ business.2 }}</textarea>
+                <textarea class="form-control custom-textarea" id="description" name="description" readonly>{{ business.2 }}</textarea>
             </div>
             <div class="form-group">
-                <a href="{% url 'edit_business_profile' %}" class="btn btn-primary">Edit Profile</a>
+                <a href="{% url 'edit_business_profile' %}" class="btn btn-custom">Edit Profile</a>
             </div>
         </div>
     </div>

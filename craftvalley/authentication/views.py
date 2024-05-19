@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib import messages
 import hashlib
+import re
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
