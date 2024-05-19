@@ -319,6 +319,7 @@ def add_balance(request):
 @csrf_exempt
 @customer_only
 def showTransactions(request):
+    user_id = request.session.get("user_id")
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -327,12 +328,12 @@ def showTransactions(request):
             transDate = request.POST.get('transDate')
             transId = request.POST.get('transId')
             transDate = datetime.strptime(transDate, '%m-%d-%Y').date()
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 cursor.callproc('ReturnProduct', (userId, productId, transDate, transId))
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = 3")
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = " + str(user_id))
         row = cursor.fetchone()
     
     total_products = row[0]
@@ -342,7 +343,7 @@ def showTransactions(request):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = 3 ORDER BY product_price DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
+        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = " + str(user_id) + " ORDER BY product_price DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
         rows = cursor.fetchall()
 
     all_products = []
