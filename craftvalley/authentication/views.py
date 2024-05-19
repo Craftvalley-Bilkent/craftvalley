@@ -149,10 +149,20 @@ def small_business_profile(request):
         return redirect('login')
     
     with connection.cursor() as cursor:
+        # Fetch business details
         cursor.execute("SELECT business_name, title, description FROM Small_Business WHERE user_id = %s", [user_id])
         business = cursor.fetchone()
+        
+        # Calculate total balance from transactions
+        cursor.execute("""
+            SELECT SUM(P.price * T.count) AS total_balance
+            FROM Transaction T
+            JOIN Product P ON T.product_id = P.product_id
+            WHERE T.small_business_id = %s AND T.transaction_status = 'completed'
+        """, [user_id])
+        total_balance = cursor.fetchone()[0] or 0
     
-    return render(request, 'authentication/small_business_profile.html', {'business': business})
+    return render(request, 'authentication/small_business_profile.html', {'business': business, 'total_balance': total_balance})
 
 def edit_business_profile(request):
     user_id = request.session.get('user_id')
