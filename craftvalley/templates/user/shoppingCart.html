@@ -8,18 +8,146 @@
 {% block content %}  
     <div id="cart-body">
         <div id="balance">
-            <div id="balance-text">BALANCE: </div>
-            <button type="submit" id="add-balance">ADD BALANCE</button>
+            <div id="balance-text">BALANCE: ${{ balance }}</div>
+            <button type="button" id="add-balance" data-toggle="modal" data-target="#addBalanceModal">ADD BALANCE</button>
         </div>
-        <div id="product-list">
+        <div id="product-list" class="table-responsive d-flex flex-column">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.1 }}</td>
+                            <td>{{ item.2 }}</td>
+                            <td>${{ item.3|floatformat:2 }}</td>
+                            <td>{{ item.4 }}</td>
+                            <td>${{ item.6|floatformat:2 }}</td>
+                            <td>
+                                <button class="btn btn-danger remove-from-cart" data-product-id="{{ item.0 }}">Remove</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div id="purchase-area">
-            <div id="total-cost-text">TOTAL PRICE:</div>
+            <div id="total-cost-text">TOTAL PRICE: ${{ total_price }}</div>
             <button type="submit" id="purchase-button">PURCHASE</button>
+        </div>
+    </div>
+
+    <!-- Add Balance Modal -->
+    <div class="modal fade" id="addBalanceModal" tabindex="-1" role="dialog" aria-labelledby="addBalanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBalanceModalLabel">Add Balance</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-balance-form">
+                        <div class="form-group">
+                            <label for="balance-amount">Amount</label>
+                            <input type="number" class="form-control" id="balance-amount" name="balance-amount" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#purchase-button').click(function() {
+                var balance = {{ balance }};
+                var total_price = {{ total_price }};
+                if (balance < total_price) {
+                    alert('Your balance is less than the total price. Please add more balance.');
+                } else {
+                    $.ajax({
+                        url: "{% url 'process_purchase' %}",
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        data: JSON.stringify({
+                            balance: balance,
+                            total_price: total_price
+                        }),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Purchase successful!');
+                                window.location.reload();
+                            } else {
+                                alert('There was an error processing your purchase. Please try again.');
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('.remove-from-cart').click(function() {
+                var productId = $(this).data('product-id');
+                $.ajax({
+                    url: "{% url 'remove_from_cart' %}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    data: JSON.stringify({
+                        product_id: productId
+                    }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.reload();
+                        } else {
+                            alert('There was an error removing the item from your cart. Please try again.');
+                        }
+                    }
+                });
+            });
+
+            $('#add-balance-form').submit(function(event) {
+                event.preventDefault();
+                var amount = $('#balance-amount').val();
+                $.ajax({
+                    url: "{% url 'add_balance' %}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    data: JSON.stringify({
+                        amount: amount
+                    }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Balance added successfully!');
+                            window.location.reload();
+                        } else {
+                            alert('There was an error adding the balance. Please try again.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

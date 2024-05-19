@@ -296,7 +296,7 @@ BEGIN
     DECLARE product_price INT;
     DECLARE small_business_id INT;
 
-    IF DATEDIFF(CURRENT_DATE, return_transaction_date) <= 30 THEN
+    
 
         SELECT COUNT(*) INTO product_amount_transaction 
         FROM Transaction AS T
@@ -325,7 +325,6 @@ BEGIN
         UPDATE Small_Business
         SET balance = balance - (product_amount_transaction * product_price)
         WHERE user_id = small_business_id;
-    END IF;
 END;//
 
 DELIMITER ;
@@ -339,7 +338,7 @@ SELECT
     P.price AS product_price,
     T.small_business_id,
     SB.business_name,
-    T.transaction_date,
+    DATE_FORMAT(T.transaction_date, '%m-%d-%Y') AS transaction_date,
     T.count,
     T.transaction_status,
     R.star AS user_rating,
