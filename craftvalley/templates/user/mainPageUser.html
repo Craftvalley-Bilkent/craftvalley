@@ -142,42 +142,35 @@
         });
 
         function loadProducts(page, sortMethod, isFiltered) {
-            const data = {
-                'page': page,
-                'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
-                'sortMethod': sortMethod,
-                'business_name': document.getElementById("business_name").value,
-                'min_price': document.getElementById("min_price").value,
-                'max_price': document.getElementById("max_price").value
-            };
+    const data = {
+        'page': page,
+        'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
+        'sortMethod': sortMethod,
+        'business_name': document.getElementById("business_name").value,
+        'min_price': document.getElementById("min_price").value,
+        'max_price': document.getElementById("max_price").value
+    };
 
-            $.ajax({
-                url: '/user/main',
-                data: data,
-                success: function(response) {
-                    console.log("Response received:", response);
+    $.ajax({
+        url: '/user/main',
+        data: data,
+        success: function(response) {
+            console.log("Response received:", response);
 
-                    // Parse the HTML response
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(response, 'text/html');
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(response, 'text/html');
 
-                    // Extract and update the product container
-                    const newProductContainer = doc.querySelector('.product-container').innerHTML;
-                    document.querySelector('.product-container').innerHTML = newProductContainer;
+            const newProductContainer = doc.querySelector('.product-container').innerHTML;
+            document.querySelector('.product-container').innerHTML = newProductContainer;
 
-                    // Extract and update the pagination
-                    const newPagination = doc.querySelector('.pagination').innerHTML;
-                    document.querySelector('.pagination').innerHTML = newPagination;
-
-                    // Optionally, log the HTML to the console for debugging
-                    console.log("New Product Container HTML:", newProductContainer);
-                    console.log("New Pagination HTML:", newPagination);
-                },
-                error: function(xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
-                }
-            });
+            const newPagination = doc.querySelector('.pagination').innerHTML;
+            document.querySelector('.pagination').innerHTML = newPagination;
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
         }
+    });
+}
 
 
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount, busName) {
