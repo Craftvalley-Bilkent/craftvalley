@@ -327,10 +327,11 @@ def showTransactions(request):
             productId = request.POST.get('productId')
             transDate = request.POST.get('transDate')
             transId = request.POST.get('transId')
+            busId = request.POST.get('busId')
             transDate = datetime.strptime(transDate, '%m-%d-%Y').date()
             userId = user_id
             with connection.cursor() as cursor:
-                cursor.callproc('ReturnProduct', (userId, productId, transDate, transId))
+                cursor.callproc('ReturnProduct', (userId, productId, transDate, transId, busId))
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = " + str(user_id))
@@ -361,7 +362,7 @@ def showTransactions(request):
             'amount': row[8],
             'status': row[9],
             'rating': row[10],
-            'transactionId': row[12]
+            'transaction_id': row[12]
         }
         all_products.append(product)
 
