@@ -359,6 +359,7 @@ def showTransactions(request):
 
 @customer_only
 def showCategoryProducts(request, category, subcategory):
+    user_id = request.session.get("user_id")
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -413,10 +414,6 @@ def showCategoryProducts(request, category, subcategory):
             min_price = request.GET.get('min_price')
             max_price = request.GET.get('max_price')
 
-            temp_query += """
-                AND Main_Category.main_category_name = %s
-                AND Sub_Category.sub_category_name = %s"""
-
             query_params = [category, subcategory]
 
             if business_name:
@@ -441,13 +438,11 @@ def showCategoryProducts(request, category, subcategory):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        if action == 'isFiltered':
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0, category, subcategory))
-        elif action == 'isSorted':
+        if action == 'isSorted':
             sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), category, subcategory))
+            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, category, subcategory))
         else:
-            cursor.callproc("ProductPrinter", (per_page, start_index, category, subcategory))
+            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0,user_id, category, subcategory))
         
         rows = cursor.fetchall()
 
@@ -462,33 +457,14 @@ def showCategoryProducts(request, category, subcategory):
             'rating': row[5],
             'number_of_rating': row[6],
             'images': base64.b64encode(row[7]).decode() if row[7] else None,
-            'isWished': 0,
+            'isWished': row[9],
+            'busName': row[8]
         }
         all_products.append(product)
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
     all_categories = get_categories()
-
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 3")
-        rows = cursor.fetchall()
-
-    all_wished_products = []
-    for row in rows:
-        wished_product = {
-            'product_id': row[0],
-        }
-        all_wished_products.append(wished_product)
-    i = 0
-    j = 0
-    while (j < len(all_wished_products)) and (i < len(all_products)):
-        if(all_wished_products[j]['product_id'] == all_products[i]['product_id']):
-            all_products[i]['isWished'] = 1
-            i += 1
-            j += 1
-        else:
-            i += 1
     
     return render(request, 'user/categoryPage.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
 
