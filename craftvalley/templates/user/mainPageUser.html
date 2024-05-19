@@ -142,21 +142,37 @@
         });
 
         function loadProducts(page, sortMethod, isFiltered) {
-            data = {'page': page, 'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
-            
-                data['business_name'] = document.getElementById("business_name").value;
-                data['min_price'] = document.getElementById("min_price").value;
-                data['max_price'] = document.getElementById("max_price").value;
-            
-            $.ajax({
-                url: '/user/main',
-                data: data,
-                success: function(data) {
-                    $('.product-container').html($(data).find('.product-container').html());
-                    $('.pagination').html($(data).find('.pagination').html());
-                }
-            });
+    const data = {
+        'page': page,
+        'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
+        'sortMethod': sortMethod,
+        'business_name': document.getElementById("business_name").value,
+        'min_price': document.getElementById("min_price").value,
+        'max_price': document.getElementById("max_price").value
+    };
+
+    $.ajax({
+        url: '/user/main',
+        data: data,
+        success: function(response) {
+            console.log("Response received:", response);
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(response, 'text/html');
+
+            const newProductContainer = doc.querySelector('.product-container').innerHTML;
+            document.querySelector('.product-container').innerHTML = newProductContainer;
+
+            const newPagination = doc.querySelector('.pagination').innerHTML;
+            document.querySelector('.pagination').innerHTML = newPagination;
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
         }
+    });
+}
+
+
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount, busName) {
             if(amount > 0)
             {

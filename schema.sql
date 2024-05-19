@@ -240,6 +240,24 @@ BEGIN
     END IF;
 END;//
 
+CREATE PROCEDURE RateProduct(IN customer_id INT, IN product_id INT, IN rate_amount INT)
+BEGIN
+    DECLARE old_rate_exist INT;
+
+    SELECT COUNT(*) INTO old_rate_exist 
+    FROM Rate AS R
+    WHERE R.product_id = product_id AND R.customer_id = customer_id;
+
+    IF old_rate_exist > 0 THEN
+        UPDATE Rate 
+        SET star = rate_amount 
+        WHERE product_id = product_id AND customer_id = customer_id;
+    ELSE
+        INSERT INTO Rate (customer_id, product_id, star) 
+        VALUES (customer_id, product_id, rate_amount);
+    END IF;
+END;//
+
 CREATE PROCEDURE ProductPrinter(IN per_page INT, IN start_index INT, IN wish_user_id INT)
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 

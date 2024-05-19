@@ -18,37 +18,37 @@
                 <div class="rate-container">
                     <div class="rate" id="rate_{{ product.product_id }}">
                         {% if product.rating == 5 %}
-                            <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5" checked/>
+                            <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5" onclick="RateProduct('{{ product.product_id }}', 5)" checked/>
                         {% else %}
-                            <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5"/>
+                            <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5" onclick="RateProduct('{{ product.product_id }}', 5)"/>
                         {% endif %}
                         <label for="star5_{{ product.product_id }}" title="text">5 stars</label>
                     
                         {% if product.rating >= 4 and product.rating < 5 %}
-                            <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4" checked/>
+                            <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4" onclick="RateProduct('{{ product.product_id }}', 4)" checked/>
                         {% else %}
-                            <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4"/>
+                            <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4" onclick="RateProduct('{{ product.product_id }}', 4)"/>
                         {% endif %}
                         <label for="star4_{{ product.product_id }}" title="text">4 stars</label>
                     
                         {% if product.rating >= 3 and product.rating < 4 %}
-                            <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3" checked/>
+                            <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3" onclick="RateProduct('{{ product.product_id }}', 3)" checked/>
                         {% else %}
-                            <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3"/>
+                            <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3" onclick="RateProduct('{{ product.product_id }}', 3)"/>
                         {% endif %}
                         <label for="star3_{{ product.product_id }}" title="text">3 stars</label>
                     
                         {% if product.rating >= 2 and product.rating < 3 %}
-                            <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2" checked/>
+                            <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2" onclick="RateProduct('{{ product.product_id }}', 2)" checked/>
                         {% else %}
-                            <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2"/>
+                            <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2" onclick="RateProduct('{{ product.product_id }}', 2)"/>
                         {% endif %}
                         <label for="star2_{{ product.product_id }}" title="text">2 stars</label>
                     
                         {% if product.rating >= 1 and product.rating < 2 %}
-                            <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1" checked/>
+                            <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1" onclick="RateProduct('{{ product.product_id }}', 1)" checked/>
                         {% else %}
-                            <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1"/>
+                            <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1" onclick="RateProduct('{{ product.product_id }}', 1)"/>
                         {% endif %}
                         <label for="star1_{{ product.product_id }}" title="text">1 star</label>
                     </div>
@@ -198,6 +198,21 @@
                     'transId': transId,
                     'busId': busId,
                     'action': 'returnProduct'
+                },
+                success: 
+                    location.reload()
+            });
+        }
+
+        function RateProduct(productId, rate)
+        {
+            $.ajax({
+                url: '/user/transactions',
+                type: 'POST',
+                data: {
+                    'productId': productId,
+                    'rate': rate,
+                    'action': 'rateProduct'
                 },
                 success: 
                     location.reload()
