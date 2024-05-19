@@ -13,6 +13,7 @@
             <th>Description</th>
             <th>Price</th>
             <th>Amount</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -22,11 +23,26 @@
             <td>{{ product.1 }}</td>  <!-- title -->
             <td>{{ product.2 }}</td>  <!-- description -->
             <td>{{ product.3 }}</td>  <!-- price -->
-            <td>{{ product.4 }}</td>  <!-- amount -->
+            <td>
+                <form method="post" action="{% url 'update_product_amount' product.0 %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="number" name="amount" value="{{ product.4 }}" min="0" required>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <form method="get" action="{% url 'edit_product' product.0 %}" style="display:inline;">
+                    <button type="submit">Edit</button>
+                </form>
+                <form method="post" action="{% url 'delete_product' product.0 %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5">No products found.</td>
+            <td colspan="6">No products found.</td>
         </tr>
         {% endfor %}
     </tbody>

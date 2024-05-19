@@ -114,3 +114,22 @@ def view_balance_history(request):
         balance_history = cursor.fetchall()
 
     return render(request, 'small_business/balance_history.html', {'balance_history': balance_history})
+
+#@login_required
+def update_product_amount(request, product_id):
+    if request.method == 'POST':
+        amount = request.POST['amount']
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE Product
+                    SET amount = %s
+                    WHERE product_id = %s
+                """, [amount, product_id])
+
+                messages.success(request, 'Product amount updated successfully!')
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+
+    return redirect('list_products')
