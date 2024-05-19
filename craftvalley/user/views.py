@@ -216,40 +216,50 @@ def process_purchase(request):
         if balance < total_price:
             return JsonResponse({'success': False, 'error': 'Insufficient balance'})
 
-        # Process the transaction
-        with connection.cursor() as cursor:
-            # Deduct balance
-            cursor.execute("""
-                UPDATE Customer 
-                SET balance = balance - %s
-                WHERE user_id = %s
-            """, [total_price, user_id])
-
-            # Create transactions and update product quantities
-            cursor.execute("""
-                SELECT product_id, count
-                FROM Add_To_Shopping_Cart
-                WHERE customer_id = %s
-            """, [user_id])
-            cart_items = cursor.fetchall()
-
-            for item in cart_items:
-                product_id, count = item
+        try:
+            with connection.cursor() as cursor:
+                # Deduct balance
                 cursor.execute("""
-                    INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
-                    SELECT %s, %s, AP.small_business_id, NOW(), %s, 'Completed'
-                    FROM Add_Product AP
-                    WHERE AP.product_id = %s
-                """, [product_id, user_id, count, product_id])
+                    UPDATE Customer 
+                    SET balance = balance - %s
+                    WHERE user_id = %s
+                """, [total_price, user_id])
 
+                # Create transactions and update product quantities
+                cursor.execute("""
+                    SELECT product_id, count
+                    FROM Add_To_Shopping_Cart
+                    WHERE customer_id = %s
+                """, [user_id])
+                cart_items = cursor.fetchall()
 
-            # Clear the shopping cart
-            cursor.execute("""
-                DELETE FROM Add_To_Shopping_Cart
-                WHERE customer_id = %s
-            """, [user_id])
+                for item in cart_items:
+                    product_id, count = item
+                    # Insert the transaction
+                    cursor.execute("""
+                        INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
+                        SELECT %s, %s, AP.small_business_id, NOW(), %s, 'Completed'
+                        FROM Add_Product AP
+                        WHERE AP.product_id = %s
+                    """, [product_id, user_id, count, product_id])
 
-        return JsonResponse({'success': True})
+                    # Update the product quantity
+                    cursor.execute("""
+                        UPDATE Product
+                        SET amount = amount - %s
+                        WHERE product_id = %s
+                    """, [count, product_id])
+
+                # Clear the shopping cart
+                cursor.execute("""
+                    DELETE FROM Add_To_Shopping_Cart
+                    WHERE customer_id = %s
+                """, [user_id])
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @csrf_exempt

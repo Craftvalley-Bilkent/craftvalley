@@ -28,7 +28,7 @@ def create_product(request):
         price = request.POST['price']
         amount = request.POST['amount']
         
-        # Validate price and amount
+       
         try:
             price = Decimal(price)
         except InvalidOperation:
@@ -187,5 +187,5 @@ def update_product_amount(request, product_id):
                 messages.success(request, 'Product amount updated successfully!')
         except Exception as e:
             messages.error(request, f'Error: {e}')
-
-    return redirect('list_products')
+        
+        return redirect('list_products')
