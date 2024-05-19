@@ -8,9 +8,16 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import base64
 
 #@login_required
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.db import connection
+from decimal import Decimal, InvalidOperation
+
+#@login_required
 def create_product(request):
     recipients, materials, categories = [], [], []
-    
+
     if request.method == 'POST':
         title = request.POST['title']
         recipient_id = request.POST['recipient']
@@ -21,10 +28,23 @@ def create_product(request):
         price = request.POST['price']
         amount = request.POST['amount']
         
+        # Validate price and amount
         try:
-            image = request.FILES['image']  
-            image_data = image.read()  
-            
+            price = Decimal(price)
+        except InvalidOperation:
+            messages.error(request, 'Price must be a valid decimal number.')
+            return redirect('create_product')
+        
+        if not amount.isdigit():
+            messages.error(request, 'Amount must be a valid integer.')
+            return redirect('create_product')
+        
+        amount = int(amount)
+
+        try:
+            image = request.FILES['image']
+            image_data = image.read()
+
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO Product (title, description, price, amount, images)
