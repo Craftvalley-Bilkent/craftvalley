@@ -101,7 +101,7 @@ def showProducts(request):
     if request.method == 'GET':
         action = request.GET.get('action')
         
-        if action == 'isFiltered':
+        if action == 'isFiltered' or action == 'isSorted':
             business_name = request.GET.get('business_name')
             min_price = request.GET.get('min_price')
             max_price = request.GET.get('max_price')
