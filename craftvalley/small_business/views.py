@@ -86,11 +86,9 @@ def get_subcategories(request):
 #@login_required
 def list_products(request):
     user_name = request.session.get("user_name")
-    per_page = 99999 
-    start_index = 0
 
     with connection.cursor() as cursor:
-        cursor.callproc("ProductFilter", (per_page, start_index, user_name,  0.0, 99999999.99, 0))
+        cursor.callproc("BusinessProducts", (user_name, ))
         rows = cursor.fetchall()
 
     products = []
