@@ -372,47 +372,242 @@ VALUES
 ((SELECT user_id FROM User WHERE email='biz4@example.com'), 'Biz4', 'Biz4 Title', 'Biz4 Description', NULL, 400.00),
 ((SELECT user_id FROM User WHERE email='biz5@example.com'), 'Biz5', 'Biz5 Title', 'Biz5 Description', NULL, 500.00);
 
--- Insert Products for Businesses
-INSERT INTO Product (title, description, price, amount, images)
-VALUES 
-('Product1 Biz1', 'Description Product1 Biz1', 10.00, 50, NULL),
-('Product2 Biz1', 'Description Product2 Biz1', 20.00, 30, NULL),
-('Product1 Biz2', 'Description Product1 Biz2', 15.00, 40, NULL),
-('Product2 Biz2', 'Description Product2 Biz2', 25.00, 20, NULL),
-('Product1 Biz3', 'Description Product1 Biz3', 30.00, 10, NULL),
-('Product2 Biz3', 'Description Product2 Biz3', 35.00, 5, NULL),
-('Product1 Biz4', 'Description Product1 Biz4', 40.00, 60, NULL),
-('Product2 Biz4', 'Description Product2 Biz4', 45.00, 15, NULL),
-('Product1 Biz5', 'Description Product1 Biz5', 50.00, 25, NULL),
-('Product2 Biz5', 'Description Product2 Biz5', 55.00, 35, NULL);
-
--- Link Products with Businesses
-INSERT INTO Add_Product (product_id, small_business_id, post_date)
-VALUES 
-((SELECT product_id FROM Product WHERE title='Product1 Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01');
-
--- Insert Transactions
-INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
-VALUES 
-((SELECT product_id FROM Product WHERE title='Product1 Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 2, 'Completed'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 3, 'Completed'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz2'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 1, 'Completed'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz2'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 2, 'Completed'),
-((SELECT product_id FROM Product WHERE title='Product1 Biz3'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 3, 'Completed'),
-((SELECT product_id FROM Product WHERE title='Product2 Biz3'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 1, 'Completed');
-
 -- Insert Reports
 INSERT INTO Has_Reported (customer_id, small_business_id, report_description, report_date)
 VALUES 
 ((SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), 'Issue with product quality', '2023-05-01'),
 ((SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), 'Late delivery', '2023-05-02'),
 ((SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), 'Wrong item delivered', '2023-05-02');
+
+-- Insert Main Categories
+INSERT INTO Main_Category (main_category_name)
+VALUES 
+('Accessories'),
+('Art & Collectibles'),
+('Clothing'),
+('Craft'),
+('Electronics'),
+('Gifts'),
+('Home & Living');
+
+-- Insert Sub Categories
+INSERT INTO Sub_Category (main_category_id, sub_category_name)
+VALUES 
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Accessories'), 'Jewelry'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Accessories'), 'Bags & Purses'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Accessories'), 'Watches'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Accessories'), 'Hats'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Accessories'), 'Belts'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Art & Collectibles'), 'Paintings'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Art & Collectibles'), 'Photography'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Art & Collectibles'), 'Sculptures'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Art & Collectibles'), 'Prints'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Clothing'), 'Women'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Clothing'), 'Men'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Clothing'), 'Child'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Craft'), 'Knitting & Crochet'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Craft'), 'Sewing'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Craft'), 'Paper Craft'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Craft'), 'Woodworking'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Craft'), 'Jewelry Making'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Electronics'), 'Gadgets'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Electronics'), 'Computers'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Electronics'), 'Mobile Phones'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Gifts'), 'Birthday Gifts'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Gifts'), 'Wedding Gifts'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Gifts'), 'Holiday Gifts'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Home & Living'), 'Furniture'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Home & Living'), 'Home Decor'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Home & Living'), 'Kitchen & Dining'),
+((SELECT main_category_id FROM Main_Category WHERE main_category_name = 'Home & Living'), 'Bedding');
+
+-- Insert Products for Biz1
+INSERT INTO Product (title, description, price, amount, images)
+VALUES 
+('Jewelry Set - Biz1', 'Description Jewelry Set Biz1', 10.00, 50, NULL),
+('Bags & Purses - Biz1', 'Description Bags & Purses Biz1', 15.00, 30, NULL),
+('Watches - Biz1', 'Description Watches Biz1', 20.00, 25, NULL),
+('Hats - Biz1', 'Description Hats Biz1', 12.00, 40, NULL),
+('Belts - Biz1', 'Description Belts Biz1', 8.00, 50, NULL),
+('Paintings - Biz1', 'Description Paintings Biz1', 30.00, 20, NULL),
+('Photography - Biz1', 'Description Photography Biz1', 25.00, 10, NULL),
+('Sculptures - Biz1', 'Description Sculptures Biz1', 40.00, 15, NULL);
+
+-- Insert Products for Biz2
+INSERT INTO Product (title, description, price, amount, images)
+VALUES 
+('Womens Dress - Biz2', 'Description Womens Dress Biz2', 50.00, 30, NULL),
+('Mens Shirt - Biz2', 'Description Mens Shirt Biz2', 40.00, 25, NULL),
+('Childs Outfit - Biz2', 'Description Childs Outfit Biz2', 30.00, 20, NULL),
+('Knitting & Crochet - Biz2', 'Description Knitting & Crochet Biz2', 15.00, 50, NULL),
+('Sewing - Biz2', 'Description Sewing Biz2', 20.00, 35, NULL),
+('Paper Craft - Biz2', 'Description Paper Craft Biz2', 25.00, 30, NULL),
+('Woodworking - Biz2', 'Description Woodworking Biz2', 35.00, 20, NULL),
+('Jewelry Making - Biz2', 'Description Jewelry Making Biz2', 45.00, 15, NULL);
+
+-- Insert Products for Biz3
+INSERT INTO Product (title, description, price, amount, images)
+VALUES 
+('Gadgets - Biz3', 'Description Gadgets Biz3', 60.00, 25, NULL),
+('Computers - Biz3', 'Description Computers Biz3', 500.00, 10, NULL),
+('Mobile Phones - Biz3', 'Description Mobile Phones Biz3', 300.00, 15, NULL),
+('Birthday Gifts - Biz3', 'Description Birthday Gifts Biz3', 20.00, 40, NULL),
+('Wedding Gifts - Biz3', 'Description Wedding Gifts Biz3', 30.00, 35, NULL),
+('Holiday Gifts - Biz3', 'Description Holiday Gifts Biz3', 25.00, 30, NULL),
+('Furniture - Biz3', 'Description Furniture Biz3', 200.00, 20, NULL),
+('Home Decor - Biz3', 'Description Home Decor Biz3', 50.00, 25, NULL);
+
+-- Insert Products for Biz4
+INSERT INTO Product (title, description, price, amount, images)
+VALUES 
+('Kitchen & Dining - Biz4', 'Description Kitchen & Dining Biz4', 100.00, 30, NULL),
+('Bedding - Biz4', 'Description Bedding Biz4', 150.00, 25, NULL),
+('Jewelry - Biz4', 'Description Jewelry Biz4', 60.00, 20, NULL),
+('Bags & Purses - Biz4', 'Description Bags & Purses Biz4', 70.00, 15, NULL),
+('Watches - Biz4', 'Description Watches Biz4', 80.00, 10, NULL),
+('Hats - Biz4', 'Description Hats Biz4', 90.00, 25, NULL),
+('Belts - Biz4', 'Description Belts Biz4', 40.00, 30, NULL),
+('Paintings - Biz4', 'Description Paintings Biz4', 110.00, 20, NULL);
+
+-- Insert Products for Biz5
+INSERT INTO Product (title, description, price, amount, images)
+VALUES 
+('Photography - Biz5', 'Description Photography Biz5', 90.00, 15, NULL),
+('Sculptures - Biz5', 'Description Sculptures Biz5', 120.00, 10, NULL),
+('Womens Dress - Biz5', 'Description Womens Dress Biz5', 130.00, 5, NULL),
+('Mens Shirt - Biz5', 'Description Mens Shirt Biz5', 140.00, 20, NULL),
+('Childs Outfit - Biz5', 'Description Childs Outfit Biz5', 150.00, 25, NULL),
+('Knitting & Crochet - Biz5', 'Description Knitting & Crochet Biz5', 160.00, 30, NULL),
+('Sewing - Biz5', 'Description Sewing Biz5', 170.00, 35, NULL),
+('Paper Craft - Biz5', 'Description Paper Craft Biz5', 180.00, 40, NULL);
+
+-- Link Products with Businesses
+INSERT INTO Add_Product (product_id, small_business_id, post_date)
+VALUES 
+((SELECT product_id FROM Product WHERE title='Jewelry Set - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Watches - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Hats - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Belts - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Photography - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz1'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-01-01'),
+
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Woodworking - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Jewelry Making - Biz2'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-01-01'),
+
+((SELECT product_id FROM Product WHERE title='Gadgets - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Computers - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Mobile Phones - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Birthday Gifts - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Wedding Gifts - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Holiday Gifts - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Furniture - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Home Decor - Biz3'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-01-01'),
+
+((SELECT product_id FROM Product WHERE title='Kitchen & Dining - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Bedding - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Jewelry - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Watches - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Hats - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Belts - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz4'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-01-01'),
+
+((SELECT product_id FROM Product WHERE title='Photography - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01'),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz5'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-01-01');
+
+-- Insert into In_Category
+INSERT INTO In_Category (sub_category_id, main_category_id, product_id)
+VALUES 
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Jewelry'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Jewelry Set - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Bags & Purses'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Bags & Purses - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Watches'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Watches - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Hats'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Hats - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Belts'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Belts - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Paintings'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Paintings - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Photography'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Photography - Biz1')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Sculptures'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Sculptures - Biz1')),
+
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Women'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Womens Dress - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Men'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Mens Shirt - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Child'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Childs Outfit - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Knitting & Crochet'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Sewing'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Sewing - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Paper Craft'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Paper Craft - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Woodworking'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Woodworking - Biz2')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Jewelry Making'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Jewelry Making - Biz2')),
+
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Gadgets'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Electronics'), (SELECT product_id FROM Product WHERE title='Gadgets - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Computers'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Electronics'), (SELECT product_id FROM Product WHERE title='Computers - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Mobile Phones'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Electronics'), (SELECT product_id FROM Product WHERE title='Mobile Phones - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Birthday Gifts'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Gifts'), (SELECT product_id FROM Product WHERE title='Birthday Gifts - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Wedding Gifts'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Gifts'), (SELECT product_id FROM Product WHERE title='Wedding Gifts - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Holiday Gifts'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Gifts'), (SELECT product_id FROM Product WHERE title='Holiday Gifts - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Furniture'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Home & Living'), (SELECT product_id FROM Product WHERE title='Furniture - Biz3')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Home Decor'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Home & Living'), (SELECT product_id FROM Product WHERE title='Home Decor - Biz3')),
+
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Kitchen & Dining'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Home & Living'), (SELECT product_id FROM Product WHERE title='Kitchen & Dining - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Bedding'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Home & Living'), (SELECT product_id FROM Product WHERE title='Bedding - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Jewelry'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Jewelry - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Bags & Purses'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Bags & Purses - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Watches'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Watches - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Hats'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Hats - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Belts'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Accessories'), (SELECT product_id FROM Product WHERE title='Belts - Biz4')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Paintings'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Paintings - Biz4')),
+
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Photography'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Photography - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Sculptures'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Art & Collectibles'), (SELECT product_id FROM Product WHERE title='Sculptures - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Women'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Womens Dress - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Men'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Child'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Clothing'), (SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Knitting & Crochet'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Sewing'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Sewing - Biz5')),
+((SELECT sub_category_id FROM Sub_Category WHERE sub_category_name='Paper Craft'), (SELECT main_category_id FROM Main_Category WHERE main_category_name='Craft'), (SELECT product_id FROM Product WHERE title='Paper Craft - Biz5'));
+
+-- Insert Transactions
+INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
+VALUES 
+((SELECT product_id FROM Product WHERE title='Jewelry Set - Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz1'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-01', 3, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Watches - Biz1'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Hats - Biz1'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-02', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Belts - Biz1'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-03', 3, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz1'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz1@example.com'), '2023-05-03', 1, 'Completed'),
+
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz2'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-01', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz2'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz2'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz2'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-03', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz2'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz2@example.com'), '2023-05-03', 1, 'Completed'),
+
+((SELECT product_id FROM Product WHERE title='Gadgets - Biz3'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-01', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Computers - Biz3'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Mobile Phones - Biz3'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Birthday Gifts - Biz3'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Wedding Gifts - Biz3'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz3@example.com'), '2023-05-03', 1, 'Completed'),
+
+((SELECT product_id FROM Product WHERE title='Kitchen & Dining - Biz4'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-05-01', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Bedding - Biz4'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-05-02', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Jewelry - Biz4'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz4'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-05-03', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Watches - Biz4'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz4@example.com'), '2023-05-03', 1, 'Completed'),
+
+((SELECT product_id FROM Product WHERE title='Photography - Biz5'), (SELECT user_id FROM User WHERE email='alice@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-01', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz5'), (SELECT user_id FROM User WHERE email='bob@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz5'), (SELECT user_id FROM User WHERE email='charlie@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-02', 1, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-03', 2, 'Completed'),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-03', 1, 'Completed');
+
