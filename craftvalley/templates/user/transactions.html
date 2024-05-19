@@ -54,7 +54,7 @@
                     </div>
                     
                     <div class="number-of-ratings">★{{ product.rating }} - ({{ product.number_of_rating }})</div>
-                    {% if product.status = 0 %}
+                    {% if product.status == 'Completed' %}
                         <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Return Product</button>
                     {% else %}
                         <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Returned</button>

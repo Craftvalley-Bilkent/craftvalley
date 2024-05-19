@@ -160,14 +160,6 @@ CREATE TABLE IF NOT EXISTS Add_To_Shopping_Cart (
     FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Select_Product (
-    customer_id INT NOT NULL,
-    product_id INT NOT NULL,
-    PRIMARY KEY (customer_id, product_id),
-    FOREIGN KEY (customer_id) REFERENCES Customer(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS Business_Has_Record (
     small_business_id INT NOT NULL,
     record_id INT NOT NULL,
@@ -195,15 +187,6 @@ CREATE TABLE IF NOT EXISTS Transaction (
     FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE,
     FOREIGN KEY (small_business_id) REFERENCES Small_Business(user_id) ON DELETE CASCADE,
     FOREIGN KEY (customer_id) REFERENCES Customer(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS Add_Amount (
-    product_id INT NOT NULL,
-    small_business_id INT NOT NULL,
-    amount INT NOT NULL,
-    PRIMARY KEY (product_id, small_business_id),
-    FOREIGN KEY (product_id) REFERENCES Product(product_id) ON DELETE CASCADE,
-    FOREIGN KEY (small_business_id) REFERENCES Small_Business(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Add_Product (
@@ -236,13 +219,13 @@ DELIMITER //
 
 CREATE PROCEDURE CartAdder(IN customer_id INT, IN product_id INT, IN product_amount INT)
 BEGIN
-    DECLARE product_amount INT;
+    DECLARE product_amount_in_cart INT;
 
-    SELECT COUNT(*) INTO product_amount 
+    SELECT COUNT(*) INTO product_amount_in_cart 
     FROM Add_To_Shopping_Cart AS A 
     WHERE A.product_id = product_id AND A.customer_id = customer_id;
 
-    IF product_amount > 0 THEN
+    IF product_amount_in_cart > 0 THEN
         UPDATE Add_To_Shopping_Cart 
         SET count = count + product_amount 
         WHERE product_id = product_id AND customer_id = customer_id;
@@ -320,7 +303,8 @@ SELECT
     T.transaction_date,
     T.count,
     T.transaction_status,
-    R.star AS user_rating
+    R.star AS user_rating,
+    U.user_id AS customer_id
 FROM 
     Transaction T
 JOIN 
