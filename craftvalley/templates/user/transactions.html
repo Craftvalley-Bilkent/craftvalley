@@ -9,11 +9,11 @@
     <div class="product-container">
         {% for product in products %}
             <div class="product">
-                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}')">{{ product.title }}</h3>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}')">{{ product.description }}</p>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}')">Price: ${{ product.price }}</p>
+                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">{{ product.title }}</h3>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">{{ product.business_name }}</p>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
-                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
+                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
                 {% endif %}
                 <div class="rate-container">
                     <div class="rate" id="rate_{{ product.product_id }}">
@@ -54,7 +54,7 @@
                     </div>
                     <label for="quantity_{{productId}}">Quantity: {{ product.amount }}</label>
                     {% if product.status == 'Completed' %}
-                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}')">Return Product</button>
+                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}', '{{product.business_id}}', '{{product.business_name}}')">Return Product</button>
                     {% else %}
                         <button class="btn btn-secondary btn-sm ml-2">Returned</button>
                     {% endif %}
@@ -120,7 +120,7 @@
                 }
             });
         }
-        function showProductPopup(productId, title, description, price, rating, images, amount, transDate, transId, transStatus, busId) {
+        function showProductPopup(productId, title, description, price, rating, images, amount, transDate, transId, transStatus, busId, busName) {
             if(amount > 0)
             {
                 closePopup();
@@ -141,6 +141,7 @@
                 const popup = document.getElementById('productPopup');
                 popup.innerHTML = `
                     <h3>${title}</h3>
+                    <p>${busName}</p>
                     <p>${description}</p>
                     <p>Price: $${price}</p>
                     ${images ? `<img src='data:image/jpeg;base64,${images}' alt='${title}' style='max-width: 80%; max-height:80%; min-height:80%; display: block; margin: auto;'>` : ''}
@@ -199,7 +200,7 @@
                     'action': 'returnProduct'
                 },
                 success: 
-                    console.log("Success")
+                    location.reload()
             });
         }
     </script>
