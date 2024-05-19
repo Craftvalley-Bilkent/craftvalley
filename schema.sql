@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS Customer_Has_Record (
 );
 
 CREATE TABLE IF NOT EXISTS Transaction (
-    transaction_id INT NOT NULL AUTO_INCREMENT
+    transaction_id INT NOT NULL AUTO_INCREMENT,
     product_id INT NOT NULL,
     customer_id INT NOT NULL,
     small_business_id INT NOT NULL,
