@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
+import base64
 #@login_required
 def create_product(request):
     if request.method == 'POST':
@@ -59,14 +59,23 @@ def edit_product(request, product_id):
         description = request.POST['description']
         price = request.POST['price']
         amount = request.POST['amount']
+        images = request.FILES.get('images')
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute("""
-                    UPDATE Product
-                    SET title = %s, description = %s, price = %s, amount = %s
-                    WHERE product_id = %s
-                """, [title, description, price, amount, product_id])
+                if images:
+                    images_data = images.read()
+                    cursor.execute("""
+                        UPDATE Product
+                        SET title = %s, description = %s, price = %s, amount = %s, images = %s
+                        WHERE product_id = %s
+                    """, [title, description, price, amount, images_data, product_id])
+                else:
+                    cursor.execute("""
+                        UPDATE Product
+                        SET title = %s, description = %s, price = %s, amount = %s
+                        WHERE product_id = %s
+                    """, [title, description, price, amount, product_id])
 
                 messages.success(request, 'Product updated successfully!')
                 return redirect('list_products')
