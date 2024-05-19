@@ -3,41 +3,64 @@
 {% block content %}
 <style>
     .form-container {
-        padding-top: 50px; /* Adjust the value as needed */
+        padding-top: 50px;
     }
+
     .custom-input {
-        background-color: #BED1CF;
-        max-width: 80%; /* Adjust the value as needed */
-        margin: 0 auto; /* Center the input fields */
+        background-color: white; 
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: #333;
     }
+
+    .custom-input::placeholder {
+        color: #000; 
+    }
+
     .btn-custom {
         background-color: #E78895;
         border-color: #E78895;
-        max-width: 80%; /* Adjust the value as needed */
-        margin: 0 auto; /* Center the button */
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: white;
     }
+
     .btn-custom:hover {
         background-color: darken(#E78895, 10%);
         border-color: darken(#E78895, 10%);
     }
+
     .form-group {
         text-align: center;
     }
+
     .register-buttons {
         display: flex;
         justify-content: center;
         gap: 10px;
         margin-top: 20px;
     }
+
     .register-buttons a {
         flex: 1;
+        font-family: 'Georgia', serif;
+        color: white;
+        background-color: #97c8f0; 
+        border-color: #97c8f0;
+    }
+
+    .register-buttons a:hover {
+        background-color: darken(#97c8f0, 10%);
+        border-color: darken(#97c8f0, 10%);
     }
 </style>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="form-container">
-            <h2 class="text-center"></h2>
+            <h2 class="text-center" style="font-family: 'Georgia', serif; color: #333;">Login</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3 form-group">
