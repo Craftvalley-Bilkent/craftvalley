@@ -149,7 +149,7 @@
                             ${generateRatingStars(productId, rating)}
                         </div>
                         <label for="quantity_${productId}">Quantity:</label>
-                        {% if{{ product.product_status }} == 'Completed' %}
+                        {% if product.status == 'Completed' %}
                             <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct(${productId}, ${transDate}, ${transId})">Return Product</button>
                         {% else %}
                             <button class="btn btn-secondary btn-sm ml-2">Returned</button>
