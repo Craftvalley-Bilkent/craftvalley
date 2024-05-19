@@ -313,6 +313,13 @@ def showTransactions(request):
             with connection.cursor() as cursor:
                 cursor.callproc('ReturnProduct', (userId, productId, transDate, transId, busId))
 
+        if action == 'rateProduct':
+            productId = request.POST.get('productId')
+            rate = request.POST.get('rate')
+            userId = user_id
+            with connection.cursor() as cursor:
+                cursor.callproc('RateProduct', (userId, productId, rate))
+                
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = " + str(user_id))
         row = cursor.fetchone()
