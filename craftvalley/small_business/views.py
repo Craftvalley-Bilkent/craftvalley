@@ -10,17 +10,17 @@ import base64
 def create_product(request):
     if request.method == 'POST':
         title = request.POST['title']
-        recipient = request.POST['recipient']
-        materials = request.POST['materials']
-        category = request.POST['category']
+        recipient_id = request.POST['recipient']
+        material_id = request.POST['material']
+        sub_category_id = request.POST['sub_category']
         description = request.POST['description']
         price = request.POST['price']
         amount = request.POST['amount']
-        
+
         try:
-            image = request.FILES['image']  
-            image_data = image.read()  
-            
+            image = request.FILES['image']
+            image_data = image.read()
+
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO Product (title, description, price, amount, images)
@@ -34,13 +34,54 @@ def create_product(request):
                     VALUES (%s, %s, NOW())
                 """, [product_id, request.session.get("user_id")])
 
+                cursor.execute("""
+                    INSERT INTO Made_By (product_id, material_id)
+                    VALUES (%s, %s)
+                """, [product_id, material_id])
+
+                cursor.execute("""
+                    INSERT INTO Is_For (product_id, recipient_id)
+                    VALUES (%s, %s)
+                """, [product_id, recipient_id])
+
+                main_category_id_query = """
+                    SELECT main_category_id
+                    FROM Sub_Category
+                    WHERE sub_category_id = %s
+                """
+                cursor.execute(main_category_id_query, [sub_category_id])
+                main_category_id = cursor.fetchone()[0]
+
+                cursor.execute("""
+                    INSERT INTO In_Category (sub_category_id, main_category_id, product_id)
+                    VALUES (%s, %s, %s)
+                """, [sub_category_id, main_category_id, product_id])
+
                 messages.success(request, 'Product created successfully!')
                 return redirect('list_products')
         except Exception as e:
             messages.error(request, f'Error: {e}')
-            print(f'Error: {e}') 
+            print(f'Error: {e}')
 
-    return render(request, 'small_business/create_product.html')
+    materials = []
+    recipients = []
+    sub_categories = []
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT material_id, material_name FROM Material")
+        materials = cursor.fetchall()
+
+        cursor.execute("SELECT recipient_id, recipient_name FROM Recipient")
+        recipients = cursor.fetchall()
+
+        cursor.execute("SELECT sub_category_id, sub_category_name FROM Sub_Category")
+        sub_categories = cursor.fetchall()
+
+    return render(request, 'small_business/create_product.html', {
+        'materials': materials,
+        'recipients': recipients,
+        'sub_categories': sub_categories,
+    })
 
 #@login_required
 def list_products(request):
