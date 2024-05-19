@@ -1,0 +1,76 @@
+{% extends 'user/userBase.html' %}
+{% load static %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>My Wishlist</h2>
+    <div class="row">
+        {% for item in wishlist_items %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.1 }}</h5>
+                    <p class="card-text">{{ item.2 }}</p>
+                    <p class="card-text">Price: ${{ item.3 }}</p>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="amount-{{ item.0 }}" placeholder="Quantity" min="1">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" onclick="addToCart({{ item.0 }})">Add to Cart</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeFromWishlist({{ item.0 }})">Remove</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function addToCart(productId) {
+        var amount = document.getElementById('amount-' + productId).value;
+        if (amount <= 0) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+        $.ajax({
+            url: "{% url 'wishlist' %}",
+            type: "POST",
+            data: {
+                'product_id': productId,
+                'amount': amount,
+                'action': 'addToCart',
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert("Item added to cart.");
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    function removeFromWishlist(productId) {
+        $.ajax({
+            url: "{% url 'wishlist' %}",
+            type: "POST",
+            data: {
+                'product_id': productId,
+                'action': 'removeFromWishlist',
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert("Item removed from wishlist.");
+                    location.reload();
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

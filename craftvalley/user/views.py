@@ -508,3 +508,35 @@ def showCategoryProducts(request, category, subcategory):
             i += 1
     
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
+
+@csrf_exempt
+@customer_only
+def wishlist_view(request):
+    user_id = request.session.get("user_id")
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT P.product_id, P.title, P.description, P.price, W.customer_id
+            FROM Product P
+            JOIN Wish W ON P.product_id = W.product_id
+            WHERE W.customer_id = %s
+        """, [user_id])
+        wishlist_items = cursor.fetchall()
+
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        action = request.POST.get('action')
+        amount = request.POST.get('amount')
+
+        if action == 'addToCart':
+            with connection.cursor() as cursor:
+                cursor.execute("CALL CartAdder(%s, %s, %s)", [user_id, product_id, amount])
+                cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
+            return JsonResponse({'success': True})
+
+        elif action == 'removeFromWishlist':
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
+            return JsonResponse({'success': True})
+
+    return render(request, 'user/wishlist.html', {'wishlist_items': wishlist_items})
