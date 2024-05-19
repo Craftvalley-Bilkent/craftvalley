@@ -1,41 +1,104 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .form-container {
+        padding-top: 50px;
+    }
+
+    .custom-input {
+        background-color: white; 
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: #333;
+    }
+
+    .custom-input::placeholder {
+        color: #000; 
+    }
+
+    .form-label {
+        font-family: 'Georgia', serif;
+        color: #000; 
+    }
+
+    .btn-custom {
+        background-color: #E78895;
+        border-color: #E78895;
+        max-width: 80%;
+        margin: 0 auto;
+        font-family: 'Georgia', serif;
+        color: white;
+    }
+
+    .btn-custom:hover {
+        background-color: darken(#E78895, 10%);
+        border-color: darken(#E78895, 10%);
+    }
+
+    .form-group {
+        text-align: center;
+    }
+
+    .register-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .register-buttons a {
+        flex: 1;
+        font-family: 'Georgia', serif;
+        color: white;
+        background-color: #97c8f0; /* Açık mavi */
+        border-color: #97c8f0;
+    }
+
+    .register-buttons a:hover {
+        background-color: darken(#97c8f0, 10%);
+        border-color: darken(#97c8f0, 10%);
+    }
+</style>
+
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="form-container">
-            <h2 class="text-center"></h2>
+            <h2 class="text-center" style="font-family: 'Georgia', serif; color: #333;">Register as Business</h2>
             <form method="post">
                 {% csrf_token %}
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="username" class="form-label">User Name</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <input type="text" class="form-control custom-input" id="username" name="username" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="email" class="form-label">E-Mail</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control custom-input" id="email" name="email" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control custom-input" id="password" name="password" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="phone_number" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+                    <input type="text" class="form-control custom-input" id="phone_number" name="phone_number" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="business_name" class="form-label">Business Name</label>
-                    <input type="text" class="form-control" id="business_name" name="business_name" required>
+                    <input type="text" class="form-control custom-input" id="business_name" name="business_name" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+                    <input type="text" class="form-control custom-input" id="title" name="title" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 form-group">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description"></textarea>
+                    <textarea class="form-control custom-input" id="description" name="description"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-custom w-100">Register</button>
+                </div>
             </form>
         </div>
     </div>

@@ -16,7 +16,9 @@
                 <li class="category_item" id="category_{{category.category_name}}" onmouseenter="showSubCategory('{{category.category_name}}')">{{category.category_name}}</li>
                 <ul class="top-bar-subcategory-list" id="sub_{{category.category_name}}" style="display: none;">
                     {% for subcategory in category.sub_categories %}
-                        <li class="subcategory_item">{{ subcategory.sub_category_name }}</li>
+                        <li class="subcategory_item">
+                            <a href="/user/category/{{category.category_name}}/{{subcategory.sub_category_name}}/">{{ subcategory.sub_category_name }}</a>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
