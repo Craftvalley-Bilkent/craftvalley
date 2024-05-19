@@ -188,8 +188,13 @@
             return starsHtml;
         }
 
-        function returnProduct(productId, transDate, transId, busId){
-            $.ajax({
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function returnProduct(productId, transDate, transId, busId){
+            try {
+                await $.ajax({
                 url: '/user/transactions',
                 type: 'POST',
                 data: {
@@ -198,10 +203,14 @@
                     'transId': transId,
                     'busId': busId,
                     'action': 'returnProduct'
-                },
-                success: 
-                    location.reload()
+                }
             });
+
+            await wait(500); 
+                location.reload(); 
+            } catch (error) {
+                console.error('Error returning product:', error);
+            }
         }
 
         function RateProduct(productId, rate)

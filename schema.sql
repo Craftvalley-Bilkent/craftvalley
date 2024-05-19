@@ -218,25 +218,29 @@ CREATE TABLE IF NOT EXISTS Is_For (
 
 DELIMITER //
 
-CREATE PROCEDURE CartAdder(IN customer_id INT, IN product_id INT, IN product_amount INT)
+CREATE PROCEDURE CartAdder(IN in_customer_id INT, IN in_product_id INT, IN product_amount INT)
 BEGIN
     DECLARE product_amount_in_cart INT;
 
-    SELECT COUNT(*) INTO product_amount_in_cart 
+    SELECT SUM(count) INTO product_amount_in_cart 
     FROM Add_To_Shopping_Cart AS A 
-    WHERE A.product_id = product_id AND A.customer_id = customer_id;
+    WHERE A.product_id = in_product_id AND A.customer_id = in_customer_id;
 
     IF product_amount_in_cart > 0 THEN
         UPDATE Add_To_Shopping_Cart 
         SET count = count + product_amount 
-        WHERE product_id = product_id AND customer_id = customer_id;
+        WHERE product_id = in_product_id AND customer_id = in_customer_id;
 
         UPDATE Product
         SET amount = amount - product_amount
-        WHERE product_id = product_id AND customer_id = customer_id;
+        WHERE product_id = in_product_id;
     ELSE
         INSERT INTO Add_To_Shopping_Cart (customer_id, product_id, count) 
-        VALUES (customer_id, product_id, product_amount);
+        VALUES (in_customer_id, in_product_id, product_amount);
+
+        UPDATE Product
+        SET amount = amount - product_amount
+        WHERE product_id = in_product_id;
     END IF;
 END;//
 
@@ -396,9 +400,9 @@ END//
 CREATE PROCEDURE ReturnProduct(IN return_customer_id INT, IN return_product_id INT, IN return_transaction_date DATE, IN return_transaction_id INT, IN small_business_id INT)
 BEGIN
     DECLARE product_amount_transaction INT;
-    DECLARE product_price INT;
+    DECLARE product_price DECIMAL(10,2);
 
-    SELECT COUNT(*) INTO product_amount_transaction 
+    SELECT SUM(count) INTO product_amount_transaction 
     FROM Transaction AS T
     WHERE T.transaction_id = return_transaction_id;
 

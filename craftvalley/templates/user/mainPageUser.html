@@ -242,18 +242,27 @@
             return starsHtml;
         }
 
-        function addToCart(productId, amount){
-            $.ajax({
-                url: '/user/main',
-                type: 'POST',
-                data: {
-                    'productId': productId,
-                    'amount': amount,
-                    'action': 'addToCart'
-                },
-                success: 
-                    console.log("Success")
-            });
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function addToCart(productId, amount) {
+            try {
+                await $.ajax({
+                    url: '/user/main',
+                    type: 'POST',
+                    data: {
+                        'productId': productId,
+                        'amount': amount,
+                        'action': 'addToCart'
+                    }
+                });
+
+                await wait(500); 
+                location.reload(); 
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+            }
         }
 
         function FilterProducts() {

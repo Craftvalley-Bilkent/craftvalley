@@ -242,11 +242,6 @@ def process_purchase(request):
                     WHERE AP.product_id = %s
                 """, [product_id, user_id, count, product_id])
 
-                cursor.execute("""
-                    UPDATE Product
-                    SET amount = amount - %s
-                    WHERE product_id = %s
-                """, [count, product_id])
 
             # Clear the shopping cart
             cursor.execute("""
@@ -268,9 +263,20 @@ def remove_from_cart(request):
         # Remove item from cart
         with connection.cursor() as cursor:
             cursor.execute("""
+                SELECT count FROM Add_To_Shopping_Cart
+                WHERE customer_id = %s AND product_id = %s
+            """, [user_id, product_id])
+            amount = cursor.fetchone()[0]
+            cursor.execute("""
                 DELETE FROM Add_To_Shopping_Cart
                 WHERE customer_id = %s AND product_id = %s
             """, [user_id, product_id])
+
+            cursor.execute(""" 
+                UPDATE Product
+                SET amount = amount + %s 
+                WHERE product_id = %s
+            """, [amount, product_id])
 
         return JsonResponse({'success': True})
 
@@ -366,7 +372,7 @@ def showCategoryProducts(request, category, subcategory):
         if action == 'postRating':
             productId = request.POST.get('product_id')
             ratingValue = request.POST.get('rating')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 product_data = [(userId, productId, ratingValue)]
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
@@ -376,7 +382,7 @@ def showCategoryProducts(request, category, subcategory):
         elif action == 'addToCart':
             productId = request.POST.get('productId')
             amount = request.POST.get('amount')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 cursor.callproc('CartAdder', (userId, productId, amount))
                 
@@ -384,7 +390,7 @@ def showCategoryProducts(request, category, subcategory):
         elif action == 'addToWishlist':
             productId = request.POST.get('productId')
             situation = request.POST.get('situation')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 if situation == "remove":
                     cursor.execute("DELETE FROM Wish WHERE product_id = %s AND customer_id = %s", [productId, userId])
