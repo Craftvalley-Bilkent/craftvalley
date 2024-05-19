@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import connection
@@ -184,6 +184,7 @@ def showProducts(request):
 def showCart(request):
     return render(request, "user/shoppingCart.html")
 
+@csrf_exempt
 @customer_only
 def showTransactions(request):
     if request.method == 'POST':
@@ -193,7 +194,7 @@ def showTransactions(request):
             productId = request.POST.get('productId')
             transDate = request.POST.get('transDate')
             transId = request.POST.get('transId')
-            transDate = date(transDate)
+            transDate = datetime.strptime(transDate, '%Y-%m-%d').date()
             userId = 3
             with connection.cursor() as cursor:
                 cursor.callproc('ReturnProduct', (userId, productId, transDate, transId))

@@ -9,11 +9,11 @@
     <div class="product-container">
         {% for product in products %}
             <div class="product">
-                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}')">{{ product.title }}</h3>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}')">{{ product.description }}</p>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}')">Price: ${{ product.price }}</p>
+                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.title }}</h3>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.description }}</p>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
-                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
+                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
                 {% endif %}
                 <div class="rate-container">
                     <div class="rate" id="rate_{{ product.product_id }}">
@@ -54,7 +54,7 @@
                     </div>
                     
                     {% if product.status == 'Completed' %}
-                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}')">Return Product</button>
+                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">Return Product</button>
                     {% else %}
                         <button class="btn btn-secondary btn-sm ml-2">Returned</button>
                     {% endif %}
@@ -120,7 +120,7 @@
                 }
             });
         }
-        function showProductPopup(productId, title, description, price, rating, images, amount, transDate, transId) {
+        function showProductPopup(productId, title, description, price, rating, images, amount, transDate, transId, transStatus) {
             if(amount > 0)
             {
                 closePopup();
@@ -148,14 +148,12 @@
                         <div class="rate" id="rate_${productId}">
                             ${generateRatingStars(productId, rating)}
                         </div>
-                        <label for="quantity_${productId}">Quantity:</label>
-                        {% if product.status == 'Completed' %}
-                            <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct(${productId}, ${transDate}, ${transId})">Return Product</button>
-                        {% else %}
-                            <button class="btn btn-secondary btn-sm ml-2">Returned</button>
-                        {% endif %}
-                    </div>
-                `;
+                            <label for="quantity_${productId}">Quantity:</label>
+                            ${transStatus === 'Completed' 
+                                ? `<button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct(${productId}, '${transDate}', ${transId})">Return Product</button>` 
+                                : `<button class="btn btn-secondary btn-sm ml-2">Returned</button>`}
+                        </div>
+                        `;
                 popup.style.display = 'block'; 
                 overlay.style.display = 'block'; 
 
@@ -191,7 +189,7 @@
 
         function returnProduct(productId, transDate, transId){
             $.ajax({
-                url: '/user/main',
+                url: '/user/transactions',
                 type: 'POST',
                 data: {
                     'productId': productId,
