@@ -295,31 +295,5 @@
                     console.log("Success")
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded and parsed');
-            var button = document.getElementById('detailed-filter-button');
-            var popup = document.getElementById('detailed-filter-popup');
-
-            button.addEventListener('click', function(event) {
-                if (popup.style.display === 'none' || popup.style.display === '') {
-                    popup.style.display = 'block';
-                } else {
-                    popup.style.display = 'none';
-                }
-                event.stopPropagation();
-            });
-
-            document.addEventListener('click', function(event) {
-                if (!button.contains(event.target) && !popup.contains(event.target)) {
-                    popup.style.display = 'none';
-                }
-            });
-
-            popup.addEventListener('click', function(event) {
-                event.stopPropagation();
-            });
-        });
-
     </script>
 {% endblock %}

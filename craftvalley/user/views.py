@@ -352,7 +352,6 @@ def showTransactions(request):
 
 @customer_only
 def showCategoryProducts(request, category, subcategory):
-    
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -387,8 +386,9 @@ def showCategoryProducts(request, category, subcategory):
     # Base query
     temp_query = """SELECT COUNT(*) AS numOfProducts 
                     FROM Product 
-                    JOIN Sub_Category ON Product.sub_category_id = Sub_Category.sub_category_id 
-                    JOIN Main_Category ON Sub_Category.main_category_id = Main_Category.main_category_id 
+                    JOIN In_Category ON Product.product_id = In_Category.product_id
+                    JOIN Sub_Category ON In_Category.sub_category_id = Sub_Category.sub_category_id 
+                    JOIN Main_Category ON In_Category.main_category_id = Main_Category.main_category_id 
                     WHERE Main_Category.main_category_name = %s 
                     AND Sub_Category.sub_category_name = %s"""
     query_params = [category, subcategory]
@@ -406,14 +406,10 @@ def showCategoryProducts(request, category, subcategory):
             min_price = request.GET.get('min_price')
             max_price = request.GET.get('max_price')
 
-            temp_query = """SELECT COUNT(*) AS numOfProducts 
-                            FROM Product 
-                            JOIN Add_Product ON Product.product_id = Add_Product.product_id
-                            JOIN Small_Business ON Add_Product.small_business_id = Small_Business.user_id
-                            JOIN Sub_Category ON Product.sub_category_id = Sub_Category.sub_category_id 
-                            JOIN Main_Category ON Sub_Category.main_category_id = Main_Category.main_category_id 
-                            WHERE Main_Category.main_category_name = %s 
-                            AND Sub_Category.sub_category_name = %s"""
+            temp_query += """
+                AND Main_Category.main_category_name = %s
+                AND Sub_Category.sub_category_name = %s"""
+
             query_params = [category, subcategory]
 
             if business_name:
@@ -439,10 +435,10 @@ def showCategoryProducts(request, category, subcategory):
 
     with connection.cursor() as cursor:
         if action == 'isFiltered':
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, category, subcategory))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0, category, subcategory))
         elif action == 'isSorted':
             sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), category, subcategory))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), category, subcategory))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index, category, subcategory))
         
@@ -487,7 +483,7 @@ def showCategoryProducts(request, category, subcategory):
         else:
             i += 1
     
-    return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
+    return render(request, 'user/categoryPage.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
 
 @csrf_exempt
 @customer_only
