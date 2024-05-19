@@ -46,6 +46,16 @@
         .product-actions button:hover {
             background-color: #d17985; 
         }
+
+        .amount-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .amount-container input {
+            width: 60px;
+            margin-right: 10px;
+        }
     </style>
 {% endblock %}
 
@@ -105,15 +115,17 @@
             <div class="product-actions">
                 <form method="post" action="{% url 'update_product_amount' product.0 %}">
                     {% csrf_token %}
-                    <input type="number" name="amount" value="{{ product.4 }}" min="0" required>
-                    <button type="submit">Update</button>
+                    <div class="amount-container">
+                        <input type="number" id="current_amount_{{ product.0 }}" name="amount" value="{{ product.4 }}" min="0" required>
+                        <button type="submit">Update Amount</button>
+                    </div>
                 </form>
                 <form method="get" action="{% url 'edit_product' product.0 %}">
-                    <button type="submit">Edit</button>
+                    <button type="submit">Edit Product</button>
                 </form>
                 <form method="post" action="{% url 'delete_product' product.0 %}">
                     {% csrf_token %}
-                    <button type="submit">Delete</button>
+                    <button type="submit">Delete Product</button>
                 </form>
             </div>
         </div>
