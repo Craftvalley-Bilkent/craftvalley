@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'user/userBase.html' %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -23,9 +23,6 @@
             </div>
             <div class="form-group">
                 <a href="{% url 'user_transactions' %}" class="btn btn-secondary">Past Purchases</a>
-            </div>
-            <div class="form-group">
-                <a href="{% url 'user_transactions' %}" class="btn btn-secondary">Wishlisted Items</a>
             </div>
         </div>
     </div>
