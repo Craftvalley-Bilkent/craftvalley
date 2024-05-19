@@ -597,3 +597,120 @@ VALUES
 ((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5'), (SELECT user_id FROM User WHERE email='david@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-03', 2, 'Completed'),
 ((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5'), (SELECT user_id FROM User WHERE email='eve@example.com'), (SELECT user_id FROM User WHERE email='biz5@example.com'), '2023-05-03', 1, 'Completed');
 
+-- Insert Materials
+INSERT INTO Material (material_name)
+VALUES 
+('Gold'),
+('Silver'),
+('Leather'),
+('Cotton'),
+('Plastic'),
+('Wood'),
+('Metal'),
+('Glass'),
+('Ceramic');
+
+-- Insert Recipients
+INSERT INTO Recipient (recipient_name)
+VALUES 
+('Men'),
+('Women'),
+('Children'),
+('Unisex'),
+('Home');
+
+-- Fill Made_By table
+INSERT INTO Made_By (product_id, material_id)
+VALUES 
+((SELECT product_id FROM Product WHERE title='Jewelry Set - Biz1'), (SELECT material_id FROM Material WHERE material_name='Gold')),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz1'), (SELECT material_id FROM Material WHERE material_name='Leather')),
+((SELECT product_id FROM Product WHERE title='Watches - Biz1'), (SELECT material_id FROM Material WHERE material_name='Metal')),
+((SELECT product_id FROM Product WHERE title='Hats - Biz1'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Belts - Biz1'), (SELECT material_id FROM Material WHERE material_name='Leather')),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz1'), (SELECT material_id FROM Material WHERE material_name='Wood')),
+((SELECT product_id FROM Product WHERE title='Photography - Biz1'), (SELECT material_id FROM Material WHERE material_name='Plastic')),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz1'), (SELECT material_id FROM Material WHERE material_name='Ceramic')),
+
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz2'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz2'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz2'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz2'), (SELECT material_id FROM Material WHERE material_name='Wool')),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz2'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz2'), (SELECT material_id FROM Material WHERE material_name='Paper')),
+((SELECT product_id FROM Product WHERE title='Woodworking - Biz2'), (SELECT material_id FROM Material WHERE material_name='Wood')),
+((SELECT product_id FROM Product WHERE title='Jewelry Making - Biz2'), (SELECT material_id FROM Material WHERE material_name='Metal')),
+
+((SELECT product_id FROM Product WHERE title='Gadgets - Biz3'), (SELECT material_id FROM Material WHERE material_name='Plastic')),
+((SELECT product_id FROM Product WHERE title='Computers - Biz3'), (SELECT material_id FROM Material WHERE material_name='Metal')),
+((SELECT product_id FROM Product WHERE title='Mobile Phones - Biz3'), (SELECT material_id FROM Material WHERE material_name='Plastic')),
+((SELECT product_id FROM Product WHERE title='Birthday Gifts - Biz3'), (SELECT material_id FROM Material WHERE material_name='Various')),
+((SELECT product_id FROM Product WHERE title='Wedding Gifts - Biz3'), (SELECT material_id FROM Material WHERE material_name='Various')),
+((SELECT product_id FROM Product WHERE title='Holiday Gifts - Biz3'), (SELECT material_id FROM Material WHERE material_name='Various')),
+((SELECT product_id FROM Product WHERE title='Furniture - Biz3'), (SELECT material_id FROM Material WHERE material_name='Wood')),
+((SELECT product_id FROM Product WHERE title='Home Decor - Biz3'), (SELECT material_id FROM Material WHERE material_name='Various')),
+
+((SELECT product_id FROM Product WHERE title='Kitchen & Dining - Biz4'), (SELECT material_id FROM Material WHERE material_name='Ceramic')),
+((SELECT product_id FROM Product WHERE title='Bedding - Biz4'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Jewelry - Biz4'), (SELECT material_id FROM Material WHERE material_name='Gold')),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz4'), (SELECT material_id FROM Material WHERE material_name='Leather')),
+((SELECT product_id FROM Product WHERE title='Watches - Biz4'), (SELECT material_id FROM Material WHERE material_name='Metal')),
+((SELECT product_id FROM Product WHERE title='Hats - Biz4'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Belts - Biz4'), (SELECT material_id FROM Material WHERE material_name='Leather')),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz4'), (SELECT material_id FROM Material WHERE material_name='Wood')),
+
+((SELECT product_id FROM Product WHERE title='Photography - Biz5'), (SELECT material_id FROM Material WHERE material_name='Plastic')),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz5'), (SELECT material_id FROM Material WHERE material_name='Ceramic')),
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz5'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz5'), (SELECT material_id FROM Material WHERE material_name='Wool')),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz5'), (SELECT material_id FROM Material WHERE material_name='Cotton')),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz5'), (SELECT material_id FROM Material WHERE material_name='Paper'));
+
+-- Fill Is_For table
+INSERT INTO Is_For (product_id, recipient_id)
+VALUES 
+((SELECT product_id FROM Product WHERE title='Jewelry Set - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Watches - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Hats - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Belts - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Photography - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz1'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Children')),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Woodworking - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Jewelry Making - Biz2'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+
+((SELECT product_id FROM Product WHERE title='Gadgets - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Computers - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Mobile Phones - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Birthday Gifts - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Wedding Gifts - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Holiday Gifts - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Furniture - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Home Decor - Biz3'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+
+((SELECT product_id FROM Product WHERE title='Kitchen & Dining - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Bedding - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Jewelry - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Bags & Purses - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Watches - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Hats - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Unisex')),
+((SELECT product_id FROM Product WHERE title='Belts - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Paintings - Biz4'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+
+((SELECT product_id FROM Product WHERE title='Photography - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Sculptures - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Home')),
+((SELECT product_id FROM Product WHERE title='Womens Dress - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Mens Shirt - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Men')),
+((SELECT product_id FROM Product WHERE title='Childs Outfit - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Children')),
+((SELECT product_id FROM Product WHERE title='Knitting & Crochet - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Sewing - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women')),
+((SELECT product_id FROM Product WHERE title='Paper Craft - Biz5'), (SELECT recipient_id FROM Recipient WHERE recipient_name='Women'));
