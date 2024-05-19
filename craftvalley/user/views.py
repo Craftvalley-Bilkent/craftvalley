@@ -132,12 +132,12 @@ def showProducts(request):
 
     with connection.cursor() as cursor:
         if (action == 'isFiltered'):
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id))
         elif (action == 'isSorted'):
             sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod)))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id))
         else:
-            cursor.callproc("ProductPrinter", (per_page, start_index))
+            cursor.callproc("ProductPrinter", (per_page, start_index, user_id))
         
         rows = cursor.fetchall()
 
@@ -152,34 +152,14 @@ def showProducts(request):
             'rating': row[5],
             'number_of_rating': row[6],
             'images': base64.b64encode(row[7]).decode() if row[7] else None,
-            'isWished': 0,
+            'isWished': row[9],
+            'busName': row[8]
         }
         all_products.append(product)
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
     all_categories = get_categories()
-
-
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = " + str(user_id))
-        rows = cursor.fetchall()
-
-    all_wished_products = []
-    for row in rows:
-        wished_product = {
-            'product_id': row[0],
-        }
-        all_wished_products.append(wished_product)
-    i = 0
-    j = 0
-    while (j < len(all_wished_products)) and (i < len(all_products)):
-        if(all_wished_products[j]['product_id'] == all_products[i]['product_id']):
-            all_products[i]['isWished'] = 1
-            i += 1
-            j += 1
-        else:
-            i += 1
     
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
 
@@ -508,3 +488,35 @@ def showCategoryProducts(request, category, subcategory):
             i += 1
     
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
+
+@csrf_exempt
+@customer_only
+def wishlist_view(request):
+    user_id = request.session.get("user_id")
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT P.product_id, P.title, P.description, P.price, W.customer_id
+            FROM Product P
+            JOIN Wish W ON P.product_id = W.product_id
+            WHERE W.customer_id = %s
+        """, [user_id])
+        wishlist_items = cursor.fetchall()
+
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        action = request.POST.get('action')
+        amount = request.POST.get('amount')
+
+        if action == 'addToCart':
+            with connection.cursor() as cursor:
+                cursor.execute("CALL CartAdder(%s, %s, %s)", [user_id, product_id, amount])
+                cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
+            return JsonResponse({'success': True})
+
+        elif action == 'removeFromWishlist':
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
+            return JsonResponse({'success': True})
+
+    return render(request, 'user/wishlist.html', {'wishlist_items': wishlist_items})
