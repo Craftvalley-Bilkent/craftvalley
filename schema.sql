@@ -460,17 +460,17 @@ LEFT JOIN
 -- Insert Users (Customers, Businesses, and Admin)
 INSERT INTO User (user_name, email, password, user_type, address, phone_number, active)
 VALUES 
-('Admin', 'admin@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Admin', 'Admin Address', '555-0301', 1),
-('Alice', 'alice@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '123 Main St', '555-0101', 1),
-('Bob', 'bob@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '456 Elm St', '555-0102', 1),
-('Charlie', 'charlie@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '789 Maple St', '555-0103', 1),
-('David', 'david@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '101 Oak St', '555-0104', 1),
-('Eve', 'eve@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '202 Pine St', '555-0105', 1),
-('Biz1', 'biz1@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '303 Birch St', '555-0201', 1),
-('Biz2', 'biz2@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '404 Cedar St', '555-0202', 1),
-('Biz3', 'biz3@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '505 Dogwood St', '555-0203', 1),
-('Biz4', 'biz4@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '606 Fir St', '555-0204', 1),
-('Biz5', 'biz5@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '707 Elm St', '555-0205', 1);
+('Admin', 'admin@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Admin', 'Admin Address', '5550301', 1),
+('Alice', 'alice@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '123 Main St', '5550101', 1),
+('Bob', 'bob@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '456 Elm St', '5550102', 1),
+('Charlie', 'charlie@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '789 Maple St', '5550103', 1),
+('David', 'david@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '101 Oak St', '5550104', 1),
+('Eve', 'eve@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Customer', '202 Pine St', '5550105', 1),
+('Biz1', 'biz1@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '303 Birch St', '5550201', 1),
+('Biz2', 'biz2@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '404 Cedar St', '5550202', 1),
+('Biz3', 'biz3@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '505 Dogwood St', '5550203', 1),
+('Biz4', 'biz4@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '606 Fir St', '5550204', 1),
+('Biz5', 'biz5@example.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Small_Business', '707 Elm St', '5550205', 1);
 
 -- Insert Customers
 INSERT INTO Customer (user_id, picture, payment_info, balance)
