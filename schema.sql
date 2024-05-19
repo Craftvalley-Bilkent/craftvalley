@@ -290,6 +290,43 @@ BEGIN
     LIMIT per_page OFFSET start_index;
 END;//
 
+CREATE PROCEDURE ReturnProduct(IN return_customer_id INT, IN return_product_id INT, IN return_transaction_date DATE, IN return_transaction_id INT)
+BEGIN
+    DECLARE product_amount_transaction INT;
+    DECLARE product_price INT;
+    DECLARE small_business_id INT;
+
+    
+
+        SELECT COUNT(*) INTO product_amount_transaction 
+        FROM Transaction AS T
+        WHERE T.transaction_id = return_transaction_id;
+
+        SELECT price INTO product_price 
+        FROM Product AS P
+        WHERE P.product_id = return_product_id;
+
+        SELECT user_id INTO small_business_id
+        FROM Add_Product AS A
+        WHERE product_id = return_product_id;
+
+        UPDATE Transaction
+        SET transaction_status = 'Returned' 
+        WHERE transaction_id = return_transaction_id;
+
+        UPDATE Product
+        SET amount = amount + product_amount_transaction
+        WHERE product_id = return_product_id;
+
+        UPDATE Customer
+        SET balance = balance + (product_amount_transaction * product_price)
+        WHERE user_id = return_customer_id;
+
+        UPDATE Small_Business
+        SET balance = balance - (product_amount_transaction * product_price)
+        WHERE user_id = small_business_id;
+END;//
+
 DELIMITER ;
 
 CREATE VIEW UserTransactions AS
@@ -301,7 +338,7 @@ SELECT
     P.price AS product_price,
     T.small_business_id,
     SB.business_name,
-    T.transaction_date,
+    DATE_FORMAT(T.transaction_date, '%m-%d-%Y') AS transaction_date,
     T.count,
     T.transaction_status,
     R.star AS user_rating,
