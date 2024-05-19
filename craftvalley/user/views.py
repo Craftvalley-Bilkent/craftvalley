@@ -4,14 +4,12 @@ from django.db import connection
 import base64
 from django.views.decorators.csrf import csrf_exempt
 
-
-# Create your views here.
-def login(request):
-    context = {
-        "site_name": "CraftValley",
-        "desc": "CraftValley is an online shopping website"
-    }
-    return render(request, "user/login.html", context=context)
+def customer_only(view_func):
+    def _wrapped_view_func(request, *args, **kwargs):
+        if request.session.get('user_type') != 'Customer':
+            return redirect('login')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view_func
 
 def get_categories():
     query = """
@@ -57,6 +55,7 @@ def get_categories():
 
 # Add product
 @csrf_exempt
+@customer_only
 def showProducts(request):
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -180,9 +179,11 @@ def showProducts(request):
     
     return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
 
+@customer_only
 def showCart(request):
     return render(request, "user/shoppingCart.html")
 
+@customer_only
 def showTransactions(request):
 
     with connection.cursor() as cursor:
