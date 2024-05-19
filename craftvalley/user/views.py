@@ -1,6 +1,8 @@
 from datetime import date
+import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.db import connection
 import base64
 from django.views.decorators.csrf import csrf_exempt
@@ -58,13 +60,14 @@ def get_categories():
 @csrf_exempt
 @customer_only
 def showProducts(request):
+    user_id = request.session.get("user_id")
     if request.method == 'POST':
         action = request.POST.get('action')
 
         if action == 'postRating':
             productId = request.POST.get('product_id')
             ratingValue = request.POST.get('rating')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 product_data = [(userId, productId, ratingValue)]
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
@@ -74,7 +77,7 @@ def showProducts(request):
         elif action == 'addToCart':
             productId = request.POST.get('productId')
             amount = request.POST.get('amount')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 cursor.callproc('CartAdder', (userId, productId, amount))
                 
@@ -82,7 +85,7 @@ def showProducts(request):
         elif action == 'addToWishlist':
             productId = request.POST.get('productId')
             situation = request.POST.get('situation')
-            userId = 3
+            userId = user_id
             with connection.cursor() as cursor:
                 if(situation == "remove"):
                     cursor.execute("DELETE FROM Wish Where product_id = " + str(productId) + " AND customer_id = " + str(userId))
@@ -159,7 +162,7 @@ def showProducts(request):
 
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = 3")
+        cursor.execute("SELECT product_id FROM Wish WHERE customer_id = " + str(user_id))
         rows = cursor.fetchall()
 
     all_wished_products = []
@@ -182,7 +185,136 @@ def showProducts(request):
 
 @customer_only
 def showCart(request):
-    return render(request, "user/shoppingCart.html")
+    user_id = request.session.get("user_id")
+    cart_items = []
+    total_price = 0.0
+    balance = 0.0
+    
+    # Fetch cart items and user balance
+    with connection.cursor() as cursor:
+        # Get the customer's balance
+        cursor.execute("""
+            SELECT balance 
+            FROM Customer 
+            WHERE user_id = %s
+        """, [user_id])
+        balance = cursor.fetchone()[0]
+
+        # Get the cart items
+        cursor.execute("""
+            SELECT P.product_id, P.title, P.description, P.price, C.count, P.images 
+            FROM Add_To_Shopping_Cart C
+            JOIN Product P ON C.product_id = P.product_id
+            WHERE C.customer_id = %s
+        """, [user_id])
+        raw_cart_items = cursor.fetchall()
+
+        # Calculate the total price and prepare cart items for the template
+        for item in raw_cart_items:
+            product_id, title, description, price, count, images = item
+            total = price * count
+            total_price += float(total)
+            cart_items.append((product_id, title, description, price, count, images, total))
+
+    context = {
+        'cart_items': cart_items,
+        'balance': balance,
+        'total_price': total_price,
+    }
+    
+    return render(request, "user/shoppingCart.html", context)
+
+@csrf_exempt
+@customer_only
+def process_purchase(request):
+    if request.method == 'POST':
+        user_id = request.session.get("user_id")
+        data = json.loads(request.body)
+        balance = data.get('balance')
+        total_price = data.get('total_price')
+
+        if balance < total_price:
+            return JsonResponse({'success': False, 'error': 'Insufficient balance'})
+
+        # Process the transaction
+        with connection.cursor() as cursor:
+            # Deduct balance
+            cursor.execute("""
+                UPDATE Customer 
+                SET balance = balance - %s
+                WHERE user_id = %s
+            """, [total_price, user_id])
+
+            # Create transactions and update product quantities
+            cursor.execute("""
+                SELECT product_id, count
+                FROM Add_To_Shopping_Cart
+                WHERE customer_id = %s
+            """, [user_id])
+            cart_items = cursor.fetchall()
+
+            for item in cart_items:
+                product_id, count = item
+                cursor.execute("""
+                    INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
+                    SELECT %s, %s, AP.small_business_id, NOW(), %s, 'Completed'
+                    FROM Add_Product AP
+                    WHERE AP.product_id = %s
+                """, [product_id, user_id, count, product_id])
+
+                cursor.execute("""
+                    UPDATE Product
+                    SET amount = amount - %s
+                    WHERE product_id = %s
+                """, [count, product_id])
+
+            # Clear the shopping cart
+            cursor.execute("""
+                DELETE FROM Add_To_Shopping_Cart
+                WHERE customer_id = %s
+            """, [user_id])
+
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+@csrf_exempt
+@customer_only
+def remove_from_cart(request):
+    if request.method == 'POST':
+        user_id = request.session.get("user_id")
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+
+        # Remove item from cart
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                DELETE FROM Add_To_Shopping_Cart
+                WHERE customer_id = %s AND product_id = %s
+            """, [user_id, product_id])
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+@csrf_exempt
+@customer_only
+def add_balance(request):
+    if request.method == 'POST':
+        user_id = request.session.get("user_id")
+        data = json.loads(request.body)
+        amount = data.get('amount')
+
+        # Add balance
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE Customer 
+                SET balance = balance + %s
+                WHERE user_id = %s
+            """, [amount, user_id])
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @customer_only
 def showTransactions(request):
