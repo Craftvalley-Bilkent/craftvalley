@@ -12,11 +12,19 @@
 <body id="base-body" style="background-color: #FFF7F1; z-index: 100; position: sticky !important;">
     <div class="top-bar">
         <a class="top-bar-button" href="/user/main" style="grid-column: 1 / span 3;">
-            <img src="{% static 'Banner.svg' %}" alt="Search Icon" style="height: 100%; width: 100;">
+            <img src="{% static 'Banner.svg' %}" alt="Search Icon" style="height: 100%; width: 100%;">
         </a>
-
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if messages %}
+                {% for message in messages %}
+                    alert('{{ message|escapejs }}');
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
     {% block scripts %}
     {% endblock %}
     <div class="top-bar-container">
