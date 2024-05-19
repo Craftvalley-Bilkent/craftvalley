@@ -69,6 +69,10 @@
         <a class="top-bar-button" href="/user/cart" style="grid-column: 19;">
             <img src="{% static 'ShoppingCart.svg' %}" alt="Search Icon" style="height: 50%; width: 50%; margin-top: 12.5%;">
         </a>
+
+        <a class="top-bar-button" href="{% url 'logout' %}" style="grid-column: 21;">
+            <img src="{% static 'Logout.svg' %}" alt="Logout Icon" style="height: 100%; width: 100%;">
+        </a>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     {% block scripts %}

@@ -9,11 +9,11 @@
     <div class="product-container">
         {% for product in products %}
             <div class="product">
-                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.number_of_rating }}', '{{ product.images }}', '{{ product.amount }}')">{{ product.title }}</h3>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.number_of_rating }}', '{{ product.images }}', '{{ product.amount }}')">{{ product.description }}</p>
-                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.number_of_rating }}', '{{ product.images }}', '{{ product.amount }}')">Price: ${{ product.price }}</p>
+                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.transaction_date }}</h3>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.description }}</p>
+                <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
-                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.number_of_rating }}', '{{ product.images }}', '{{ product.amount }}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
+                    <img onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')" src="data:image/jpeg;base64,{{ product.images }}" alt="{{ product.title }}" style="min-height: 70%; max-height: 70%; min-width: 90%; max-width: 90%; margin-left: 5%;">
                 {% endif %}
                 <div class="rate-container">
                     <div class="rate" id="rate_{{ product.product_id }}">
@@ -53,11 +53,10 @@
                         <label for="star1_{{ product.product_id }}" title="text">1 star</label>
                     </div>
                     
-                    <div class="number-of-ratings">★{{ product.rating }} - ({{ product.number_of_rating }})</div>
-                    {% if product.status = 0 %}
-                        <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Return Product</button>
+                    {% if product.status == 'Completed' %}
+                        <button class="btn btn-secondary btn-sm ml-2" onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">Return Product</button>
                     {% else %}
-                        <button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct('{{ product.product_id }}')">Returned</button>
+                        <button class="btn btn-secondary btn-sm ml-2">Returned</button>
                     {% endif %}
                     
                 </div>
@@ -121,7 +120,7 @@
                 }
             });
         }
-        function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount) {
+        function showProductPopup(productId, title, description, price, rating, images, amount, transDate, transId, transStatus) {
             if(amount > 0)
             {
                 closePopup();
@@ -149,12 +148,12 @@
                         <div class="rate" id="rate_${productId}">
                             ${generateRatingStars(productId, rating)}
                         </div>
-                        <div class="number-of-ratings">★${rating} - (${number_of_rating})</div>
-                        <label for="quantity_${productId}">Quantity:</label>
-                        <input type="number" id="quantity_${productId}" name="quantity_${productId}" min="1" max="${amount}" value="1" oninput="limitQuantity(this)" onkeydown="return false">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="addToCart(${productId}, document.getElementById('quantity_${productId}').value)">Add to Cart</button>
-                    </div>
-                `;
+                            <label for="quantity_${productId}">Quantity:</label>
+                            ${transStatus === 'Completed' 
+                                ? `<button class="btn btn-secondary btn-sm ml-2" onclick="returnProduct(${productId}, '${transDate}', ${transId})">Return Product</button>` 
+                                : `<button class="btn btn-secondary btn-sm ml-2">Returned</button>`}
+                        </div>
+                        `;
                 popup.style.display = 'block'; 
                 overlay.style.display = 'block'; 
 
@@ -173,6 +172,34 @@
             const popup = document.getElementById('productPopup');
             popup.innerHTML = '';
             popup.style.display = 'none';
+        }
+
+        function generateRatingStars(productId, rating) {
+            let starsHtml = '';
+            for (let i = 5; i >= 1; i--) {
+                if (rating >= i && rating < i + 1) {
+                    starsHtml += `<input type="radio" id="star${i}_${productId}" name="rate_${productId}" value="${i}" checked/>`;
+                } else {
+                    starsHtml += `<input type="radio" id="star${i}_${productId}" name="rate_${productId}" value="${i}"/>`;
+                }
+                starsHtml += `<label for="star${i}_${productId}" title="${i} stars">${i} stars</label>`;
+            }
+            return starsHtml;
+        }
+
+        function returnProduct(productId, transDate, transId){
+            $.ajax({
+                url: '/user/transactions',
+                type: 'POST',
+                data: {
+                    'productId': productId,
+                    'transDate': transDate,
+                    'transId': transId,
+                    'action': 'returnProduct'
+                },
+                success: 
+                    console.log("Success")
+            });
         }
     </script>
 {% endblock %}

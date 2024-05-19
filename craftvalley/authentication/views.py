@@ -133,7 +133,6 @@ def login_view(request):
 
 def small_business_profile(request):
     user_id = request.session.get('user_id')
-    print(user_id)
     if not user_id:
         return redirect('login')
     
@@ -166,3 +165,9 @@ def edit_business_profile(request):
         business = cursor.fetchone()
     
     return render(request, 'authentication/edit_business_profile.html', {'business': business})
+
+def logout_view(request):
+    # Clear session data
+    request.session.flush()
+    messages.success(request, "You have successfully logged out.")
+    return redirect('login')

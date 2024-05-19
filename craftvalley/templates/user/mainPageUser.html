@@ -146,12 +146,10 @@
         function loadProducts(page, sortMethod, isFiltered) {
             data = {'page': page, 'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
             
-            if (isFiltered) {
                 data['business_name'] = document.getElementById("business_name").value;
                 data['min_price'] = document.getElementById("min_price").value;
                 data['max_price'] = document.getElementById("max_price").value;
-            }
-
+            
             $.ajax({
                 url: '/user/main',
                 data: data,
