@@ -172,17 +172,6 @@ def delete_product(request, product_id):
     return redirect('list_products')
 
 #@login_required
-def view_balance_history(request):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT * FROM Balance_Record
-            WHERE record_id IN (SELECT record_id FROM Business_Has_Record WHERE small_business_id = %s)
-        """, [request.user.id])
-        balance_history = cursor.fetchall()
-
-    return render(request, 'small_business/balance_history.html', {'balance_history': balance_history})
-
-#@login_required
 def update_product_amount(request, product_id):
     if request.method == 'POST':
         amount = request.POST['amount']
