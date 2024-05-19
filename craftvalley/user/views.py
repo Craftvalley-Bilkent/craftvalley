@@ -194,7 +194,7 @@ def showTransactions(request):
             productId = request.POST.get('productId')
             transDate = request.POST.get('transDate')
             transId = request.POST.get('transId')
-            transDate = datetime.strptime(transDate, '%Y-%m-%d').date()
+            transDate = datetime.strptime(transDate, '%m-%d-%Y').date()
             userId = 3
             with connection.cursor() as cursor:
                 cursor.callproc('ReturnProduct', (userId, productId, transDate, transId))
@@ -215,6 +215,7 @@ def showTransactions(request):
 
     all_products = []
     for row in rows:
+        transaction_date = datetime.strptime(row[7], '%m-%d-%Y').strftime('%m-%d-%Y')
         product = {
             'product_id': row[0],
             'title': row[1],
@@ -223,7 +224,7 @@ def showTransactions(request):
             'price': row[4],
             'business_id': row[5],
             'business_name': row[6],
-            'transaction_date': row[7],
+            'transaction_date': transaction_date,
             'amount': row[8],
             'status': row[9],
             'rating': row[10],

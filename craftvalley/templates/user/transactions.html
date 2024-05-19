@@ -9,7 +9,7 @@
     <div class="product-container">
         {% for product in products %}
             <div class="product">
-                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.title }}</h3>
+                <h3 onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.transaction_date }}</h3>
                 <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">{{ product.description }}</p>
                 <p onclick="showProductPopup('{{ product.product_id }}', '{{ product.title|escapejs }}', '{{ product.description|escapejs }}', '{{ product.price }}', '{{ product.rating }}', '{{ product.images }}', '{{ product.amount }}', '{{product.transaction_date}}', '{{product.transaction_id}}', '{{product.status}}')">Price: ${{ product.price }}</p>
                 {% if product.images %}
