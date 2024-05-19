@@ -1,19 +1,80 @@
-
 {% extends 'small_business/userBase.html' %}
 {% load static %}
 {% block title %}Edit Product{% endblock %}
 
 {% block content %}
-<div class="edit-product-container">
-    <h1>Edit Product</h1>
-    <form method="post" action="{% url 'edit_product' product.0 %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="text" name="title" value="{{ product.1 }}" placeholder="Title" required>
-        <textarea name="description" placeholder="Description" required>{{ product.2 }}</textarea>
-        <input type="number" step="0.01" name="price" value="{{ product.3 }}" placeholder="Price" required>
-        <input type="number" name="amount" value="{{ product.4 }}" placeholder="Amount" required>
-        <input type="file" name="images" accept="image/*">
-        <button type="submit">Update Product</button>
-    </form>
+<style>
+    .custom-header {
+        background-color: #cfa0a0; 
+    }
+
+    .custom-title {
+        font-family: 'Georgia', serif; 
+        color: white;
+    }
+
+    .btn-custom {
+        background-color: #cfa0a0;
+        border: none;
+        color: white;
+        font-family: 'Georgia', serif; 
+    }
+
+    .btn-custom:hover {
+        background-color: #cfa0a0;
+    }
+
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .form-control, .form-control-file {
+        border-radius: 5px;
+        
+    }
+    .form-group label {
+        font-family: 'Georgia', serif; 
+        font-weight: bold; 
+        color: #2b2a2a; 
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header custom-header">
+                    <h1 class="h4 custom-title">Edit Product</h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'edit_product' product.0 %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ product.1 }}" placeholder="Title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Description" required>{{ product.2 }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number" class="form-control" id="price" step="0.01" name="price" value="{{ product.3 }}" placeholder="Price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" value="{{ product.4 }}" placeholder="Amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="images">Product Image</label>
+                            <input type="file" class="form-control-file" id="images" name="images" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-custom btn-block mt-3">Update Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
