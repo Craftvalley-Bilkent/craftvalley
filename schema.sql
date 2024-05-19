@@ -608,7 +608,10 @@ VALUES
 ('Wood'),
 ('Metal'),
 ('Glass'),
-('Ceramic');
+('Wool'),
+('Ceramic'),
+('Paper'),
+('Various');
 
 -- Insert Recipients
 INSERT INTO Recipient (recipient_name)
