@@ -62,10 +62,42 @@
                 {% endif %}
                 <div class="rate-container">
                     <div class="rate" id="rate_{{ product.0 }}">
-                        {% for i in "54321" %}
-                            <input type="radio" id="star{{ i }}_{{ product.0 }}" name="rate_{{ product.0 }}" value="{{ i }}" {% if product.5 >= i %}checked{% endif %} disabled/>
-                            <label for="star{{ i }}_{{ product.0 }}" title="{{ i }} stars">{{ i }} stars</label>
-                        {% endfor %}
+                        <div class="rate" id="rate_{{ product.product_id }}">
+                            {% if product.5 == 5 %}
+                                <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5" checked/>
+                            {% else %}
+                                <input type="radio" id="star5_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="5"/>
+                            {% endif %}
+                            <label for="star5_{{ product.product_id }}" title="text">5 stars</label>
+                        
+                            {% if product.5 >= 4 and product.5 < 5 %}
+                                <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4" checked/>
+                            {% else %}
+                                <input type="radio" id="star4_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="4"/>
+                            {% endif %}
+                            <label for="star4_{{ product.product_id }}" title="text">4 stars</label>
+                        
+                            {% if product.5 >= 3 and product.5 < 4 %}
+                                <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3" checked/>
+                            {% else %}
+                                <input type="radio" id="star3_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="3"/>
+                            {% endif %}
+                            <label for="star3_{{ product.product_id }}" title="text">3 stars</label>
+                        
+                            {% if product.5 >= 2 and product.5 < 3 %}
+                                <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2" checked/>
+                            {% else %}
+                                <input type="radio" id="star2_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="2"/>
+                            {% endif %}
+                            <label for="star2_{{ product.product_id }}" title="text">2 stars</label>
+                        
+                            {% if product.5 >= 1 and product.5 < 2 %}
+                                <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1" checked/>
+                            {% else %}
+                                <input type="radio" id="star1_{{ product.product_id }}" name="rate_{{ product.product_id }}" value="1"/>
+                            {% endif %}
+                            <label for="star1_{{ product.product_id }}" title="text">1 star</label>
+                        </div>
                     </div>
                     <div class="number-of-ratings">★{{ product.5 }} - ({{ product.6 }})</div>
                 </div>
