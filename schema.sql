@@ -282,9 +282,13 @@ BEGIN
     ) W ON P.product_id = W.product_id
     JOIN Add_Product AP ON P.product_id = AP.product_id
     JOIN Small_Business SB ON AP.small_business_id = SB.user_id
+    LEFT JOIN Ban B ON SB.user_id = B.small_business_id
+    WHERE B.small_business_id IS NULL
     ORDER BY P.product_id DESC
     LIMIT per_page OFFSET start_index;
 END;//
+
+DELIMITER //
 
 CREATE PROCEDURE ProductFilter(
     IN per_page INT, 
@@ -294,14 +298,22 @@ CREATE PROCEDURE ProductFilter(
     IN filter_max_price DECIMAL(10,2), 
     IN sort_method INT,
     IN wish_user_id INT,
-    IN search_product_name VARCHAR(255)
+    IN search_product_name VARCHAR(255),
+    IN filter_recipient_id INT,
+    IN filter_material_id INT
 )
 BEGIN
-    SELECT P.product_id, P.title, P.description, P.price, P.amount, 
-           ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
-           COALESCE(R.num_rating, 0) AS number_of_rating, P.images,
-           SB.business_name,
-           IF(W.product_id IS NULL, 0, 1) AS is_in_wishlist
+    SELECT 
+        P.product_id, 
+        P.title, 
+        P.description, 
+        P.price, 
+        P.amount, 
+        ROUND(COALESCE(R.avg_rating, 0), 1) AS average_rating, 
+        COALESCE(R.num_rating, 0) AS number_of_rating, 
+        P.images,
+        SB.business_name,
+        IF(W.product_id IS NULL, 0, 1) AS is_in_wishlist
     FROM Product P
     LEFT JOIN (
         SELECT product_id, AVG(star) AS avg_rating, COUNT(*) AS num_rating
@@ -315,9 +327,15 @@ BEGIN
         FROM Wish
         WHERE customer_id = wish_user_id
     ) W ON P.product_id = W.product_id
+    LEFT JOIN Made_By MB ON P.product_id = MB.product_id
+    LEFT JOIN Is_For IFOR ON P.product_id = IFOR.product_id
+    LEFT JOIN Ban B ON SB.user_id = B.small_business_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
-    AND P.price BETWEEN filter_min_price AND filter_max_price AND
-    P.title LIKE CONCAT('%', search_product_name, '%')
+    AND P.price BETWEEN filter_min_price AND filter_max_price
+    AND P.title LIKE CONCAT('%', search_product_name, '%')
+    AND MB.material_id = filter_material_id
+    AND IFOR.recipient_id = filter_recipient_id
+    AND B.small_business_id IS NULL
     ORDER BY 
         CASE 
             WHEN sort_method = 0 THEN P.product_id 
@@ -329,7 +347,7 @@ BEGIN
             WHEN sort_method = 4 THEN P.product_id 
         END ASC
     LIMIT per_page OFFSET start_index;
-END;//
+END; //
 
 CREATE PROCEDURE CategoryProductFilter(
     IN per_page INT, 

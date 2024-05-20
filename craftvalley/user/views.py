@@ -106,10 +106,14 @@ def showProducts(request):
             min_price = request.GET.get('min_price')
             max_price = request.GET.get('max_price')
             product_name = request.GET.get('product_name')
+            recipient_name = request.GET.get('recipient')
+            material_name = request.GET.get('material')
 
             temp_query = """SELECT COUNT(*) AS numOfProducts FROM Product
             JOIN Add_Product ON Product.product_id = Add_Product.product_id
             JOIN Small_Business ON Add_Product.small_business_id = Small_Business.user_id
+            LEFT JOIN Made_By ON Product.product_id = Made_By.product_id
+            LEFT JOIN Is_For ON Product.product_id = Is_For.product_id
             WHERE 1 = 1
             """
 
@@ -118,9 +122,13 @@ def showProducts(request):
             if(min_price):                  
                 temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
             if(max_price):                  
-                temp_query = temp_query + " AND Product.price <= " + max_price + " AND 4 = 4"
+                temp_query = temp_query + " AND Product.price <= " + max_price + " AND 4 = 4" 
             if(product_name):
-                temp_query = temp_query + " AND Product.title LIKE('%" + product_name + "%')"
+                temp_query = temp_query + " AND Product.title LIKE('%" + product_name + "%') AND 5 = 5"
+            if recipient_name:
+                temp_query += " AND Is_For.recipient_id = '" + recipient_name + "'"  # Ensure recipient_id is treated as a string
+            if material_name:
+                temp_query += " AND Made_By.material_id = '" + material_name + "'"  
 
     with connection.cursor() as cursor:
         cursor.execute(temp_query)
@@ -135,10 +143,10 @@ def showProducts(request):
 
     with connection.cursor() as cursor:
         if (action == 'isFiltered'):
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id, product_name))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id, product_name, recipient_name, material_name))
         elif (action == 'isSorted'):
             sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, product_name))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, product_name, recipient_name, material_name))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index, user_id))
         
