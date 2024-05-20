@@ -163,8 +163,15 @@ def showProducts(request):
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
     all_categories = get_categories()
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT recipient_id, recipient_name FROM Recipient")
+        recipients = cursor.fetchall()
+        
+        cursor.execute("SELECT material_id, material_name FROM Material")
+        materials = cursor.fetchall()
     
-    return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
+    return render(request, 'user/mainPageUser.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'recipients': recipients, 'materials': materials})
 
 @customer_only
 def showCart(request):
@@ -484,8 +491,15 @@ def showCategoryProducts(request, category, subcategory):
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
     all_categories = get_categories()
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT recipient_id, recipient_name FROM Recipient")
+        recipients = cursor.fetchall()
+        
+        cursor.execute("SELECT material_id, material_name FROM Material")
+        materials = cursor.fetchall()
     
-    return render(request, 'user/categoryPage.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory})
+    return render(request, 'user/categoryPage.html', {'products': all_products, 'categories': all_categories, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products, 'category': category, 'subcategory': subcategory, 'recipients': recipients, 'materials': materials})
 
 @csrf_exempt
 @customer_only
