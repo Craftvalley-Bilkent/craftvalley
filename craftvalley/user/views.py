@@ -91,6 +91,16 @@ def showProducts(request):
                     cursor.execute("DELETE FROM Wish Where product_id = " + str(productId) + " AND customer_id = " + str(userId))
                 else:
                     cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(" + str(userId) + ", " + str(productId) + ")")
+        elif action == 'reportBusiness':
+            product_id = request.POST.get('productId')
+            reason = request.POST.get('reason')
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO Has_Reported (customer_id, small_business_id, report_description, report_date)
+                    VALUES (%s, (SELECT small_business_id FROM Add_Product WHERE product_id = %s), %s, NOW())
+                """, [user_id, product_id, reason])
+            return JsonResponse({'message': 'Report submitted successfully'})
+
     #TEST
     temp_query = "SELECT COUNT(*) AS numOfProducts FROM Product"
     action = ""
