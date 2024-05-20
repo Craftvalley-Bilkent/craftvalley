@@ -15,8 +15,8 @@
         </div>
 
         <div id="category-text-container">
-            <div class="category-text">{{ category }}</div>
-            <div class="sub-category-text">{{ subcategory }}</div>
+            <div class="category-text" id="category-name">{{ category }}</div>
+            <div class="sub-category-text" id="subcategory-name">{{ subcategory }}</div>
         </div>
 
         <div id="filter-area-filter-area">
@@ -164,24 +164,39 @@
             });
         });
 
-        function loadProducts(page, sortMethod, isFiltered) {
-            data = {'page': page, 'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'), 'sortMethod': sortMethod};
-            
-            if (isFiltered) {
-                data['business_name'] = document.getElementById("business_name").value;
-                data['min_price'] = document.getElementById("min_price").value;
-                data['max_price'] = document.getElementById("max_price").value;
-            }
+        function loadProducts(page, sortMethod, isFiltered, searchQuery = '') {
+            const data = {
+                'page': page,
+                'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
+                'sortMethod': sortMethod,
+                'business_name': document.getElementById("business_name").value,
+                'min_price': document.getElementById("min_price").value,
+                'max_price': document.getElementById("max_price").value,
+                'product_name': searchQuery
+            };
 
             $.ajax({
                 url: '/user/main',
                 data: data,
-                success: function(data) {
-                    $('.product-container').html($(data).find('.product-container').html());
-                    $('.pagination').html($(data).find('.pagination').html());
+                success: function(response) {
+                    console.log("Response received:", response);
+
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response, 'text/html');
+
+                    const newProductContainer = doc.querySelector('.product-container').innerHTML;
+                    document.querySelector('.product-container').innerHTML = newProductContainer;
+
+                    const newPagination = doc.querySelector('.pagination').innerHTML;
+                    document.querySelector('.pagination').innerHTML = newPagination;
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
                 }
             });
         }
+
+        
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount, busName) {
             if(amount > 0)
             {
@@ -314,5 +329,24 @@
                     console.log("Success")
             });
         }
+
+        function updateCategory(newCategory) {
+            document.getElementById('category-name').textContent = newCategory;
+        }
+
+        function updateSubcategory(newSubcategory) {
+            document.getElementById('subcategory-name').textContent = newSubcategory;
+        }
+
+        function searchProduct(event) {
+            event.preventDefault();
+
+            const searchInput = document.getElementById('top-bar-search-bar-input').value;
+            
+            updateCategory("");
+            updateSubcategory("");
+            loadProducts(1, 0, true, searchInput);
+        }
+
     </script>
 {% endblock %}
