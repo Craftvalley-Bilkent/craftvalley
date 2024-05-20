@@ -31,7 +31,7 @@
                 <select class="form-control custom-form-control" id="materials" name="materials" required>
                     <option value="">Select Material</option>
                     {% for material in materials %}
-                        <option value="{{ material.0 }}">{{ material.1 }}</option>
+                        <option value="{{ material.1 }}">{{ material.1 }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -40,7 +40,7 @@
                 <select class="form-control custom-form-control" id="recipient" name="recipient" required>
                     <option value="">Select Recipient</option>
                     {% for recipient in recipients %}
-                        <option value="{{ recipient.0 }}">{{ recipient.1 }}</option>
+                        <option value="{{ recipient.1 }}">{{ recipient.1 }}</option>
                     {% endfor %}
                 </select>
             </div>
