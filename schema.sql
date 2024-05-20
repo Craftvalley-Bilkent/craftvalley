@@ -293,7 +293,8 @@ CREATE PROCEDURE ProductFilter(
     IN filter_min_price DECIMAL(10,2), 
     IN filter_max_price DECIMAL(10,2), 
     IN sort_method INT,
-    IN wish_user_id INT
+    IN wish_user_id INT,
+    IN search_product_name VARCHAR(255)
 )
 BEGIN
     SELECT P.product_id, P.title, P.description, P.price, P.amount, 
@@ -315,7 +316,8 @@ BEGIN
         WHERE customer_id = wish_user_id
     ) W ON P.product_id = W.product_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
-    AND P.price BETWEEN filter_min_price AND filter_max_price
+    AND P.price BETWEEN filter_min_price AND filter_max_price AND
+    P.title LIKE CONCAT('%', search_product_name, '%')
     ORDER BY 
         CASE 
             WHEN sort_method = 0 THEN P.product_id 

@@ -101,10 +101,11 @@ def showProducts(request):
     if request.method == 'GET':
         action = request.GET.get('action')
         
-        if action == 'isFiltered' or action == 'isSorted':
+        if action != 'base':
             business_name = request.GET.get('business_name')
             min_price = request.GET.get('min_price')
             max_price = request.GET.get('max_price')
+            product_name = request.GET.get('product_name')
 
             temp_query = """SELECT COUNT(*) AS numOfProducts FROM Product
             JOIN Add_Product ON Product.product_id = Add_Product.product_id
@@ -117,7 +118,9 @@ def showProducts(request):
             if(min_price):                  
                 temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
             if(max_price):                  
-                temp_query = temp_query + " AND Product.price <= " + max_price
+                temp_query = temp_query + " AND Product.price <= " + max_price + " AND 4 = 4"
+            if(product_name):
+                temp_query = temp_query + " AND Product.title LIKE('%" + product_name + "%')"
 
     with connection.cursor() as cursor:
         cursor.execute(temp_query)
@@ -132,10 +135,10 @@ def showProducts(request):
 
     with connection.cursor() as cursor:
         if (action == 'isFiltered'):
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id, product_name))
         elif (action == 'isSorted'):
             sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id))
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, product_name))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index, user_id))
         

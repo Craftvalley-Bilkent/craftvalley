@@ -141,36 +141,37 @@
             });
         });
 
-        function loadProducts(page, sortMethod, isFiltered) {
-    const data = {
-        'page': page,
-        'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
-        'sortMethod': sortMethod,
-        'business_name': document.getElementById("business_name").value,
-        'min_price': document.getElementById("min_price").value,
-        'max_price': document.getElementById("max_price").value
-    };
+        function loadProducts(page, sortMethod, isFiltered, searchQuery = '') {
+            const data = {
+                'page': page,
+                'action': isFiltered ? ((sortMethod > 0) ? 'isSorted' : 'isFiltered') : ((sortMethod > 0) ? 'isSorted' : 'base'),
+                'sortMethod': sortMethod,
+                'business_name': document.getElementById("business_name").value,
+                'min_price': document.getElementById("min_price").value,
+                'max_price': document.getElementById("max_price").value,
+                'product_name': searchQuery
+            };
 
-    $.ajax({
-        url: '/user/main',
-        data: data,
-        success: function(response) {
-            console.log("Response received:", response);
+            $.ajax({
+                url: '/user/main',
+                data: data,
+                success: function(response) {
+                    console.log("Response received:", response);
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(response, 'text/html');
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(response, 'text/html');
 
-            const newProductContainer = doc.querySelector('.product-container').innerHTML;
-            document.querySelector('.product-container').innerHTML = newProductContainer;
+                    const newProductContainer = doc.querySelector('.product-container').innerHTML;
+                    document.querySelector('.product-container').innerHTML = newProductContainer;
 
-            const newPagination = doc.querySelector('.pagination').innerHTML;
-            document.querySelector('.pagination').innerHTML = newPagination;
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", status, error);
+                    const newPagination = doc.querySelector('.pagination').innerHTML;
+                    document.querySelector('.pagination').innerHTML = newPagination;
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                }
+            });
         }
-    });
-}
 
 
         function showProductPopup(productId, title, description, price, rating, number_of_rating, images, amount, busName) {
@@ -268,19 +269,21 @@
         function FilterProducts() {
             min_price = document.getElementById("min_price").value;
             max_price = document.getElementById("max_price").value;
+            const searchInput = document.getElementById('top-bar-search-bar-input').value;
+
             if (parseFloat(max_price) < parseFloat(min_price)) {
                 alert("Minimum Price cannot be higher than Maximum Price");
             }
             else
             {
-                loadProducts(1, 0, true);
+                loadProducts(1, 0, true, searchInput);
             } 
         }
 
         function SortProducts(method)
         {
-            console.log(4545);
-            loadProducts(1, method, true);
+            const searchInput = document.getElementById('top-bar-search-bar-input').value;
+            loadProducts(1, method, true, searchInput);
         }
 
         function toggleWishlist(productId) {
@@ -340,5 +343,12 @@
             });
         });
 
+        function searchProduct(event) {
+            event.preventDefault();
+
+            const searchInput = document.getElementById('top-bar-search-bar-input').value;
+
+            loadProducts(1, 0, true, searchInput);
+        }
     </script>
 {% endblock %}

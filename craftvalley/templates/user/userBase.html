@@ -59,9 +59,9 @@
         </button>
 
         <form class="top-bar-search-bar" style="grid-column: 7 / span 9;">
-            <input type="text" placeholder="Search..." name="search">
+            <input type="text" placeholder="Search..." name="search" id="top-bar-search-bar-input">
             <button type="submit">
-                <img src="{% static 'SearchButton.svg' %}" alt="Search Icon" style="height: 75%; width: 75%;">
+                <img src="{% static 'SearchButton.svg' %}" alt="Search Icon" style="height: 75%; width: 75%;" onclick="searchProduct(event)">
             </button>
         </form>
 
