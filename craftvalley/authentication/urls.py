@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('user_profile/', views.user_profile, name='user_profile'),
     path('edit_user_profile/', views.edit_user_profile, name='edit_user_profile'),
+    path('banned/', views.banned, name="banned"),
 ]

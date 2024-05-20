@@ -126,22 +126,36 @@ def login_view(request):
         
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM User WHERE email = %s AND password = %s", [username, password])
-            user = cursor.fetchone()
+            user = cursor.fetchone()     
             if user:
+                user_id = user[0]
+                user_type = user[4]
+                
+                if user_type == 'Small_Business':
+                    cursor.execute("SELECT * FROM Ban WHERE small_business_id = %s", [user_id])
+                    ban = cursor.fetchone()
+                    if ban:
+                        messages.error(request, "Your account has been banned.")
+                        return redirect('banned')
+
                 request.session['user_id'] = user[0]
                 request.session['user_name'] = user[1]
-                request.session['user_type'] = user[4]
-                if user[4] == 'Customer':
+                request.session['user_type'] = user_type
+
+                if user_type == 'Customer':
                     messages.success(request, "Login successful.")
                     return redirect('user_main')
-                elif user[4] == 'Small_Business':
+                elif user_type == 'Small_Business':
                     return redirect('small_business_profile')
-                elif user[4] == 'Admin':
+                elif user_type == 'Admin':
                     return redirect('admin_dashboard')
             else:
                 messages.error(request, "Invalid username or password.")
                 return redirect('login')
     return render(request, 'authentication/login.html')
+
+def banned(request):
+    return render(request,'authentication/banned.html')
 
 def small_business_profile(request):
     user_id = request.session.get('user_id')
