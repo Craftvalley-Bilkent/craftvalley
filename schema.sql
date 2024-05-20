@@ -299,8 +299,8 @@ CREATE PROCEDURE ProductFilter(
     IN sort_method INT,
     IN wish_user_id INT,
     IN search_product_name VARCHAR(255),
-    IN filter_recipient_id INT,
-    IN filter_material_id INT
+    IN filter_recipient_name VARCHAR(255),
+    IN filter_material_name VARCHAR(255)
 )
 BEGIN
     SELECT 
@@ -329,12 +329,14 @@ BEGIN
     ) W ON P.product_id = W.product_id
     LEFT JOIN Made_By MB ON P.product_id = MB.product_id
     LEFT JOIN Is_For IFOR ON P.product_id = IFOR.product_id
+    LEFT JOIN Material M ON MB.material_id = M.material_id
+    LEFT JOIN Recipient R ON IFOR.recipient_id = R.recipient_id
     LEFT JOIN Ban B ON SB.user_id = B.small_business_id
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
     AND P.price BETWEEN filter_min_price AND filter_max_price
     AND P.title LIKE CONCAT('%', search_product_name, '%')
-    AND MB.material_id = filter_material_id
-    AND IFOR.recipient_id = filter_recipient_id
+    AND (filter_recipient_name = '' OR R.recipient_name = filter_recipient_name)
+    AND (filter_material_name = '' OR M.material_name = filter_material_name)
     AND B.small_business_id IS NULL
     ORDER BY 
         CASE 
