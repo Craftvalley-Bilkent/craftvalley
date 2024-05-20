@@ -189,3 +189,56 @@ def update_product_amount(request, product_id):
             messages.error(request, f'Error: {e}')
         
         return redirect('list_products')
+
+def show_balance_records(request):
+    user_id = request.session.get("user_id")
+    user_type = request.session.get('user_type')
+    
+    # Ensure the user is a small business
+    if user_type != 'Small_Business':
+        return redirect('login')
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM Balance_Record BR
+            JOIN Business_Has_Record BHR ON BR.record_id = BHR.record_id
+            WHERE BHR.small_business_id = %s
+        """, [user_id])
+        row = cursor.fetchone()
+    
+    total_records = row[0]
+
+    per_page = 10
+    total_pages = (total_records + per_page - 1) // per_page
+    current_page = int(request.GET.get('page', 1))
+    start_index = max(0, (current_page - 1) * per_page)
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT BR.record_date, BR.record_type, BR.record_amount
+            FROM Balance_Record BR
+            JOIN Business_Has_Record BHR ON BR.record_id = BHR.record_id
+            WHERE BHR.small_business_id = %s
+            ORDER BY BR.record_id DESC
+            LIMIT %s OFFSET %s
+        """, [user_id, per_page, start_index])
+        rows = cursor.fetchall()
+
+    balance_records = []
+    for row in rows:
+        record = {
+            'record_date': row[0].strftime('%Y-%m-%d'),
+            'record_type': row[1],
+            'record_amount': row[2],
+        }
+        balance_records.append(record)
+
+    page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
+
+    return render(request, 'small_business/balance_records.html', {
+        'balance_records': balance_records, 
+        'current_page': current_page, 
+        'total_pages': total_pages, 
+        'page_range': page_range
+    })

@@ -1,11 +1,10 @@
 from datetime import date, datetime
 import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
-import base64
 from django.views.decorators.csrf import csrf_exempt
+import base64
 
 def customer_only(view_func):
     def _wrapped_view_func(request, *args, **kwargs):
@@ -56,7 +55,6 @@ def get_categories():
 
     return all_categories
 
-# Add product
 @csrf_exempt
 @customer_only
 def showProducts(request):
@@ -65,32 +63,33 @@ def showProducts(request):
         action = request.POST.get('action')
 
         if action == 'postRating':
-            productId = request.POST.get('product_id')
-            ratingValue = request.POST.get('rating')
-            userId = user_id
+            product_id = request.POST.get('product_id')
+            rating_value = request.POST.get('rating')
+            user_id = user_id
             with connection.cursor() as cursor:
-                product_data = [(userId, productId, ratingValue)]
+                product_data = [(user_id, product_id, rating_value)]
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
                 for data in product_data:
                     cursor.execute(sql_query, data)
 
         elif action == 'addToCart':
-            productId = request.POST.get('productId')
+            product_id = request.POST.get('productId')
             amount = request.POST.get('amount')
-            userId = user_id
+            user_id = user_id
             with connection.cursor() as cursor:
-                cursor.callproc('CartAdder', (userId, productId, amount))
+                cursor.callproc('CartAdder', (user_id, product_id, amount))
                 
             connection.commit()
         elif action == 'addToWishlist':
-            productId = request.POST.get('productId')
+            product_id = request.POST.get('productId')
             situation = request.POST.get('situation')
-            userId = user_id
+            user_id = user_id
             with connection.cursor() as cursor:
-                if(situation == "remove"):
-                    cursor.execute("DELETE FROM Wish Where product_id = " + str(productId) + " AND customer_id = " + str(userId))
+                if situation == "remove":
+                    cursor.execute("DELETE FROM Wish WHERE product_id = %s AND customer_id = %s", [product_id, user_id])
                 else:
-                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(" + str(userId) + ", " + str(productId) + ")")
+                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(%s, %s)", [user_id, product_id])
+    
         elif action == 'reportBusiness':
             product_id = request.POST.get('productId')
             reason = request.POST.get('reason')
@@ -127,16 +126,16 @@ def showProducts(request):
             WHERE 1 = 1
             """
 
-            if(business_name):
-                temp_query = temp_query + " AND Small_Business.business_name LIKE('%" + business_name + "%')  AND 2 = 2"
-            if(min_price):                  
-                temp_query = temp_query + " AND Product.price >= " + min_price + " AND 3 = 3"
-            if(max_price):                  
-                temp_query = temp_query + " AND Product.price <= " + max_price + " AND 4 = 4" 
-            if(product_name):
-                temp_query = temp_query + " AND Product.title LIKE('%" + product_name + "%') AND 5 = 5"
+            if business_name:
+                temp_query += " AND Small_Business.business_name LIKE('%" + business_name + "%')"
+            if min_price:                  
+                temp_query += " AND Product.price >= " + min_price
+            if max_price:                  
+                temp_query += " AND Product.price <= " + max_price 
+            if product_name:
+                temp_query += " AND Product.title LIKE('%" + product_name + "%')"
             if recipient_name:
-                temp_query += " AND Is_For.recipient_id = '" + recipient_name + "'"  # Ensure recipient_id is treated as a string
+                temp_query += " AND Is_For.recipient_id = '" + recipient_name + "'"
             if material_name:
                 temp_query += " AND Made_By.material_id = '" + material_name + "'"  
 
@@ -152,11 +151,11 @@ def showProducts(request):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        if (action == 'isFiltered'):
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), 0, user_id, product_name, recipient_name, material_name))
-        elif (action == 'isSorted'):
-            sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("ProductFilter", (per_page, start_index, business_name,  float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, product_name, recipient_name, material_name))
+        if action == 'isFiltered':
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0, user_id, product_name, recipient_name, material_name))
+        elif action == 'isSorted':
+            sort_method = request.GET.get('sortMethod')
+            cursor.callproc("ProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sort_method), user_id, product_name, recipient_name, material_name))
         else:
             cursor.callproc("ProductPrinter", (per_page, start_index, user_id))
         
@@ -199,9 +198,7 @@ def showCart(request):
     total_price = 0.0
     balance = 0.0
     
-    # Fetch cart items and user balance
     with connection.cursor() as cursor:
-        # Get the customer's balance
         cursor.execute("""
             SELECT balance 
             FROM Customer 
@@ -209,7 +206,6 @@ def showCart(request):
         """, [user_id])
         balance = cursor.fetchone()[0]
 
-        # Get the cart items
         cursor.execute("""
             SELECT P.product_id, P.title, P.description, P.price, C.count, P.images 
             FROM Add_To_Shopping_Cart C
@@ -218,7 +214,6 @@ def showCart(request):
         """, [user_id])
         raw_cart_items = cursor.fetchall()
 
-        # Calculate the total price and prepare cart items for the template
         for item in raw_cart_items:
             product_id, title, description, price, count, images = item
             total = price * count
@@ -248,14 +243,22 @@ def process_purchase(request):
 
         try:
             with connection.cursor() as cursor:
-                # Deduct balance
                 cursor.execute("""
                     UPDATE Customer 
                     SET balance = balance - %s
                     WHERE user_id = %s
                 """, [total_price, user_id])
 
-                # Create transactions and update product quantities
+                cursor.execute("""
+                    INSERT INTO Balance_Record (record_date, record_type, record_amount)
+                    VALUES (NOW(), 'purchase', %s)
+                """, [-total_price])
+
+                cursor.execute("""
+                    INSERT INTO Customer_Has_Record (customer_id, record_id)
+                    VALUES (%s, LAST_INSERT_ID())
+                """, [user_id])
+
                 cursor.execute("""
                     SELECT product_id, count
                     FROM Add_To_Shopping_Cart
@@ -263,9 +266,24 @@ def process_purchase(request):
                 """, [user_id])
                 cart_items = cursor.fetchall()
 
+                business_balance_updates = {}
+
                 for item in cart_items:
                     product_id, count = item
-                    # Insert the transaction
+                    cursor.execute("""
+                        SELECT AP.small_business_id, P.price
+                        FROM Add_Product AP
+                        JOIN Product P ON AP.product_id = P.product_id
+                        WHERE AP.product_id = %s
+                    """, [product_id])
+                    small_business_id, price = cursor.fetchone()
+
+                    total_item_price = price * count
+                    if small_business_id in business_balance_updates:
+                        business_balance_updates[small_business_id] += total_item_price
+                    else:
+                        business_balance_updates[small_business_id] = total_item_price
+
                     cursor.execute("""
                         INSERT INTO Transaction (product_id, customer_id, small_business_id, transaction_date, count, transaction_status)
                         SELECT %s, %s, AP.small_business_id, NOW(), %s, 'Completed'
@@ -273,14 +291,32 @@ def process_purchase(request):
                         WHERE AP.product_id = %s
                     """, [product_id, user_id, count, product_id])
 
-                    # Update the product quantity
                     cursor.execute("""
                         UPDATE Product
                         SET amount = amount - %s
                         WHERE product_id = %s
                     """, [count, product_id])
 
-                # Clear the shopping cart
+                for business_id, amount in business_balance_updates.items():
+                    cursor.execute("""
+                        UPDATE Small_Business
+                        SET balance = balance + %s
+                        WHERE user_id = %s
+                    """, [amount, business_id])
+                    print("ok1")
+
+                    cursor.execute("""
+                        INSERT INTO Balance_Record (record_date, record_type, record_amount)
+                        VALUES (NOW(), 'sale', %s)
+                    """, [amount])
+                    print("ok2")
+
+                    cursor.execute("""
+                        INSERT INTO Business_Has_Record (small_business_id, record_id)
+                        VALUES (%s, LAST_INSERT_ID())
+                    """, [business_id])
+                    print("ok3")
+
                 cursor.execute("""
                     DELETE FROM Add_To_Shopping_Cart
                     WHERE customer_id = %s
@@ -289,7 +325,6 @@ def process_purchase(request):
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-    
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @csrf_exempt
@@ -299,8 +334,6 @@ def remove_from_cart(request):
         user_id = request.session.get("user_id")
         data = json.loads(request.body)
         product_id = data.get('product_id')
-
-        # Remove item from cart
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT count FROM Add_To_Shopping_Cart
@@ -317,9 +350,7 @@ def remove_from_cart(request):
                 SET amount = amount + %s 
                 WHERE product_id = %s
             """, [amount, product_id])
-
         return JsonResponse({'success': True})
-
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @csrf_exempt
@@ -329,8 +360,6 @@ def add_balance(request):
         user_id = request.session.get("user_id")
         data = json.loads(request.body)
         amount = data.get('amount')
-
-        # Add balance
         with connection.cursor() as cursor:
             cursor.execute("""
                 UPDATE Customer 
@@ -338,8 +367,16 @@ def add_balance(request):
                 WHERE user_id = %s
             """, [amount, user_id])
 
-        return JsonResponse({'success': True})
+            cursor.execute("""
+                INSERT INTO Balance_Record (record_date, record_type, record_amount)
+                VALUES (NOW(), 'deposit', %s)
+            """, [amount])
 
+            cursor.execute("""
+                INSERT INTO Customer_Has_Record (customer_id, record_id)
+                VALUES (%s, LAST_INSERT_ID())
+            """, [user_id])
+        return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @csrf_exempt
@@ -349,26 +386,76 @@ def showTransactions(request):
     all_categories = get_categories()
     if request.method == 'POST':
         action = request.POST.get('action')
-
         if action == 'returnProduct':
-            productId = request.POST.get('productId')
-            transDate = request.POST.get('transDate')
-            transId = request.POST.get('transId')
-            busId = request.POST.get('busId')
-            transDate = datetime.strptime(transDate, '%m-%d-%Y').date()
-            userId = user_id
+            product_id = request.POST.get('productId')
+            trans_date = request.POST.get('transDate')
+            trans_id = request.POST.get('transId')
+            bus_id = request.POST.get('busId')
+            trans_date = datetime.strptime(trans_date, '%m-%d-%Y').date()
+
             with connection.cursor() as cursor:
-                cursor.callproc('ReturnProduct', (userId, productId, transDate, transId, busId))
+                cursor.execute("""
+                    SELECT count, price
+                    FROM Transaction T
+                    JOIN Product P ON T.product_id = P.product_id
+                    WHERE T.transaction_id = %s
+                """, [trans_id])
+                count, price = cursor.fetchone()
+                total_refund = count * price
+
+                cursor.execute("""
+                    UPDATE Transaction
+                    SET transaction_status = 'Returned'
+                    WHERE transaction_id = %s
+                """, [trans_id])
+
+                cursor.execute("""
+                    UPDATE Product
+                    SET amount = amount + %s
+                    WHERE product_id = %s
+                """, [count, product_id])
+
+                cursor.execute("""
+                    UPDATE Customer
+                    SET balance = balance + %s
+                    WHERE user_id = %s
+                """, [total_refund, user_id])
+
+                cursor.execute("""
+                    INSERT INTO Balance_Record (record_date, record_type, record_amount)
+                    VALUES (NOW(), 'refund', %s)
+                """, [total_refund])
+
+                cursor.execute("""
+                    INSERT INTO Customer_Has_Record (customer_id, record_id)
+                    VALUES (%s, LAST_INSERT_ID())
+                """, [user_id])
+
+                cursor.execute("""
+                    UPDATE Small_Business
+                    SET balance = balance - %s
+                    WHERE user_id = %s
+                """, [total_refund, bus_id])
+
+                cursor.execute("""
+                    INSERT INTO Balance_Record (record_date, record_type, record_amount)
+                    VALUES (NOW(), 'sale reversal', %s)
+                """, [-total_refund])
+
+                cursor.execute("""
+                    INSERT INTO Business_Has_Record (small_business_id, record_id)
+                    VALUES (%s, LAST_INSERT_ID())
+                """, [bus_id])
 
         if action == 'rateProduct':
-            productId = request.POST.get('productId')
+            product_id = request.POST.get('productId')
             rate = request.POST.get('rate')
-            userId = user_id
+            user_id = request.session.get("user_id")
             with connection.cursor() as cursor:
-                cursor.callproc('RateProduct', (userId, productId, rate))
-                
+                cursor.callproc('RateProduct', (user_id, product_id, rate))
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = " + str(user_id))
+        cursor.execute("SELECT COUNT(*) AS numOfProducts FROM Transaction WHERE customer_id = %s", [user_id])
         row = cursor.fetchone()
     
     total_products = row[0]
@@ -378,7 +465,7 @@ def showTransactions(request):
     start_index = max(0, (current_page - 1) * per_page)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = " + str(user_id) + " ORDER BY product_price DESC LIMIT " + str(per_page) + " OFFSET "  + str(start_index))
+        cursor.execute("SELECT * FROM UserTransactions WHERE customer_id = %s ORDER BY transaction_id DESC LIMIT %s OFFSET %s", [user_id, per_page, start_index])
         rows = cursor.fetchall()
 
     all_products = []
@@ -401,7 +488,6 @@ def showTransactions(request):
         all_products.append(product)
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
-
     return render(request, "user/transactions.html", {'categories': all_categories, 'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
 
 @customer_only
@@ -411,34 +497,43 @@ def showCategoryProducts(request, category, subcategory):
         action = request.POST.get('action')
 
         if action == 'postRating':
-            productId = request.POST.get('product_id')
-            ratingValue = request.POST.get('rating')
-            userId = user_id
+            product_id = request.POST.get('product_id')
+            rating_value = request.POST.get('rating')
+            user_id = user_id
             with connection.cursor() as cursor:
-                product_data = [(userId, productId, ratingValue)]
+                product_data = [(user_id, product_id, rating_value)]
                 sql_query = "INSERT INTO Rate(customer_id, product_id, star) VALUES (%s, %s, %s)"
                 for data in product_data:
                     cursor.execute(sql_query, data)
 
         elif action == 'addToCart':
-            productId = request.POST.get('productId')
+            product_id = request.POST.get('productId')
             amount = request.POST.get('amount')
-            userId = user_id
+            user_id = user_id
             with connection.cursor() as cursor:
-                cursor.callproc('CartAdder', (userId, productId, amount))
+                cursor.callproc('CartAdder', (user_id, product_id, amount))
                 
             connection.commit()
         elif action == 'addToWishlist':
-            productId = request.POST.get('productId')
+            product_id = request.POST.get('productId')
             situation = request.POST.get('situation')
-            userId = user_id
+            user_id = user_id
             with connection.cursor() as cursor:
                 if situation == "remove":
-                    cursor.execute("DELETE FROM Wish WHERE product_id = %s AND customer_id = %s", [productId, userId])
+                    cursor.execute("DELETE FROM Wish WHERE product_id = %s AND customer_id = %s", [product_id, user_id])
                 else:
-                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(%s, %s)", [userId, productId])
+                    cursor.execute("INSERT INTO Wish(customer_id, product_id) VALUES(%s, %s)", [user_id, product_id])
 
-    # Base query
+        elif action == 'reportBusiness':
+            product_id = request.POST.get('productId')
+            reason = request.POST.get('reason')
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO Has_Reported (customer_id, small_business_id, report_description, report_date)
+                    VALUES (%s, (SELECT small_business_id FROM Add_Product WHERE product_id = %s), %s, NOW())
+                """, [user_id, product_id, reason])
+            return JsonResponse({'message': 'Report submitted successfully'})
+
     temp_query = """SELECT COUNT(*) AS numOfProducts 
                     FROM Product 
                     JOIN In_Category ON Product.product_id = In_Category.product_id
@@ -486,10 +581,10 @@ def showCategoryProducts(request, category, subcategory):
 
     with connection.cursor() as cursor:
         if action == 'isSorted':
-            sortMethod = request.GET.get('sortMethod')
-            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sortMethod), user_id, category, subcategory))
+            sort_method = request.GET.get('sortMethod')
+            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), int(sort_method), user_id, category, subcategory))
         else:
-            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0,user_id, category, subcategory))
+            cursor.callproc("CategoryProductFilter", (per_page, start_index, business_name, float(min_price or 0), float(max_price or 99999999.99), 0, user_id, category, subcategory))
         
         rows = cursor.fetchall()
 
@@ -554,5 +649,55 @@ def wishlist_view(request):
                 cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
             return JsonResponse({'success': True})
         
-
     return render(request, 'user/wishlist.html', {'categories': all_categories, 'wishlist_items': wishlist_items})
+
+@csrf_exempt
+@customer_only
+def show_balance_records(request):
+    user_id = request.session.get("user_id")
+    
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM Balance_Record BR
+            JOIN Customer_Has_Record CHR ON BR.record_id = CHR.record_id
+            WHERE CHR.customer_id = %s
+        """, [user_id])
+        row = cursor.fetchone()
+    
+    total_records = row[0]
+
+    per_page = 10
+    total_pages = (total_records + per_page - 1) // per_page
+    current_page = int(request.GET.get('page', 1))
+    start_index = max(0, (current_page - 1) * per_page)
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT BR.record_date, BR.record_type, BR.record_amount
+            FROM Balance_Record BR
+            JOIN Customer_Has_Record CHR ON BR.record_id = CHR.record_id
+            WHERE CHR.customer_id = %s
+            ORDER BY BR.record_id DESC
+            LIMIT %s OFFSET %s
+        """, [user_id, per_page, start_index])
+        rows = cursor.fetchall()
+
+    balance_records = []
+    for row in rows:
+        record = {
+            'record_date': row[0].strftime('%Y-%m-%d'),
+            'record_type': row[1],
+            'record_amount': row[2],
+        }
+        balance_records.append(record)
+
+    page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
+
+    return render(request, 'user/balanceRecords.html', {
+        'balance_records': balance_records, 
+        'current_page': current_page, 
+        'total_pages': total_pages, 
+        'page_range': page_range
+    })
+

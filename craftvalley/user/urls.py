@@ -11,4 +11,5 @@ urlpatterns = [
     path("transactions", user.views.showTransactions, name = 'user_transactions'),
     path("category/<str:category>/<str:subcategory>/", user.views.showCategoryProducts),
     path('wishlist/', user.views.wishlist_view, name='wishlist'),
+    path('balance_records', user.views.show_balance_records, name='user_balance_records'),
 ]

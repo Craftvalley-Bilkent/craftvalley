@@ -231,6 +231,10 @@
                         <input type="number" id="quantity_${productId}" name="quantity_${productId}" min="1" max="${amount}" value="1" onkeydown="return false">
                         <button type="button" class="btn btn-primary btn-sm" onclick="addToCart(${productId}, document.getElementById('quantity_${productId}').value)">Add to Cart</button>
                     </div>
+                    <div class="report-container">
+                        <textarea id="reportReason_${productId}" placeholder="Enter reason for reporting" rows="3"></textarea>
+                        <button type="button" class="btn btn-warning btn-sm" onclick="reportBusiness(${productId}, document.getElementById('reportReason_${productId}').value)">Report Business</button>
+                    </div>
                 `;
                 popup.style.display = 'block'; 
                 overlay.style.display = 'block'; 
@@ -348,5 +352,29 @@
             loadProducts(1, 0, true, searchInput);
         }
 
+        function reportBusiness(productId, reason) {
+            if (reason.trim() === "") {
+                alert("Please enter a reason for reporting.");
+                return;
+            }
+
+            const data = {
+                'productId': productId,
+                'reason': reason,
+                'action': 'reportBusiness'
+            };
+
+            $.ajax({
+                url: '/user/main',
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    alert("Report submitted successfully.");
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error reporting business:", status, error);
+                }
+            });
+        }
     </script>
 {% endblock %}
