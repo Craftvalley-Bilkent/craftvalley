@@ -175,6 +175,7 @@ def showProducts(request):
 
 @customer_only
 def showCart(request):
+    all_categories = get_categories()
     user_id = request.session.get("user_id")
     cart_items = []
     total_price = 0.0
@@ -207,6 +208,7 @@ def showCart(request):
             cart_items.append((product_id, title, description, price, count, images, total))
 
     context = {
+        'categories': all_categories,
         'cart_items': cart_items,
         'balance': balance,
         'total_price': total_price,
@@ -326,6 +328,7 @@ def add_balance(request):
 @customer_only
 def showTransactions(request):
     user_id = request.session.get("user_id")
+    all_categories = get_categories()
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -381,7 +384,7 @@ def showTransactions(request):
 
     page_range = range(max(1, current_page - 2), min(total_pages + 1, current_page + 3))
 
-    return render(request, "user/transactions.html", {'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
+    return render(request, "user/transactions.html", {'categories': all_categories, 'products': all_products, 'page_range': page_range, 'current_page': current_page, 'total_pages': total_pages, 'numOfProducts': total_products})
 
 @customer_only
 def showCategoryProducts(request, category, subcategory):
@@ -506,6 +509,8 @@ def showCategoryProducts(request, category, subcategory):
 def wishlist_view(request):
     user_id = request.session.get("user_id")
 
+    all_categories = get_categories()
+
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT P.product_id, P.title, P.description, P.price, W.customer_id
@@ -530,5 +535,6 @@ def wishlist_view(request):
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM Wish WHERE customer_id = %s AND product_id = %s", [user_id, product_id])
             return JsonResponse({'success': True})
+        
 
-    return render(request, 'user/wishlist.html', {'wishlist_items': wishlist_items})
+    return render(request, 'user/wishlist.html', {'categories': all_categories, 'wishlist_items': wishlist_items})
