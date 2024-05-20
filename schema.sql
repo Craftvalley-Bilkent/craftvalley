@@ -335,8 +335,8 @@ BEGIN
     WHERE SB.business_name LIKE CONCAT('%', filter_business_name, '%')
     AND P.price BETWEEN filter_min_price AND filter_max_price
     AND P.title LIKE CONCAT('%', search_product_name, '%')
-    AND (filter_recipient_name IS NULL OR R.recipient_name = filter_recipient_name)
-    AND (filter_material_name IS NULL OR M.material_name = filter_material_name)
+    AND (filter_recipient_name = '' OR R.recipient_name = filter_recipient_name)
+    AND (filter_material_name = '' OR M.material_name = filter_material_name)
     AND B.small_business_id IS NULL
     ORDER BY 
         CASE 
