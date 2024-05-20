@@ -167,7 +167,9 @@
                 'business_name': document.getElementById("business_name").value,
                 'min_price': document.getElementById("min_price").value,
                 'max_price': document.getElementById("max_price").value,
-                'product_name': searchQuery
+                'product_name': searchQuery,
+                'material': document.getElementById("materials").value,
+                'recipient': document.getElementById("recipient").value
             };
 
             $.ajax({
